@@ -1,0 +1,31 @@
+:root, html,body{
+    padding:0;
+    margin:0;
+    font-size:15px;
+    color:#444;
+	line-height:1.8;
+}
+small{opacity:0.75;}
+
+body{
+    padding:5px;
+}
+
+section{
+    max-width:950px;
+    margin:10px auto;
+    border-radius:3px;
+    padding: 10px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2),  0 2px 5px rgba(0, 0, 0, 0.1);
+	position:relative;
+}
+
+section .close{
+	position:absolute;
+	top:0;
+	right:5px;
+	content:'x';
+	user-select: none;
+	cursor:pointer;
+	color:#999;
+}

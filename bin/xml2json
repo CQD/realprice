@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+
+while ($line = fgets(STDIN)) {
+    if ("\n" === $line || '<' === $line[0]) {
+        continue;
+    }
+
+    $lineLen = strlen($line);
+
+    if (0 === strpos($line, '  <')) {
+        if ('/' === $line[3]) {
+//            echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PARTIAL_OUTPUT_ON_ERROR), "\n";
+//            echo json_last_error_msg(), "\n";
+            echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PARTIAL_OUTPUT_ON_ERROR), "\n";
+            unset($data);
+        }
+        continue;
+    }
+
+    $gtpos = strpos($line, '>');
+
+    if ('/' === $line[$gtpos - 1]) {
+        $key = substr($line, 5, $gtpos - 6);
+        $data[$key] = '';
+        continue;
+    }
+
+    $lt2pos = strpos($line, '<', 5);
+    $key = substr($line, 5, $gtpos - 5);
+    $data[$key] = substr($line, $gtpos + 1, $lt2pos - $gtpos - 1);
+//    echo " - {$key}: $data[$key]\n";
+
+}
