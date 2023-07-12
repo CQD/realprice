@@ -1,74 +1,128 @@
-<?php
-
-global $PAGE;
-
-$names = include __DIR__ . '/../build/_names.php';
-$dates = include __DIR__ . '/../build/_dates.php';
-
-ob_start();
-?>
-<script>
-let areas = {
-<?php foreach($names as $mainArea => $subAreas):?>
-    <?=e($mainArea, 'js')?>:[
-<?php foreach($subAreas as $subArea):?>
-        <?=e($subArea, 'js')?>,
-<?php endforeach;?>
-    ],
-<?php endforeach;?>
-}
-
-let dates = <?= e($dates, 'js')?>
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>房價趨勢統計</title>
+<link type="text/css" rel="stylesheet" href="/s/main.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
+<script src="/s/main.js" defer></script>
+</head>
+<body>
 
 <section id="input">
 
-地區：<select id="areas"><option value="" disabled>請選縣市</option></select>
-<select id="subareas"><option value="" disabled>請選區域</option></select>
-&nbsp;
-&nbsp;
-車位：<select id="parking"><option value="有車位">有車位</option><option value="無車位">無車位</option></select>
-&nbsp;
-&nbsp;
-屋齡：<select id="age">
-<option value="一年以下">一年以下</option>
-<option value="一～五年">一～五年</option>
-<option value="五～十年">五～十年</option>
-<option value="十～十五年">十～十五年</option>
-<option value="十五～二十年">十五～二十年</option>
-<option value="二十～三十年">二十～三十年</option>
-<option value="三十～四十年">三十～四十年</option>
-<option value="四十年以上">四十年以上</option>
+<select id="area" onchange="update_subareas()">
+<option value="載入中" selected>載入中</option>
 </select>
-&nbsp;
-&nbsp;
-類型：<select id="type">
-<option value="電梯大樓">電梯大樓</option>
-<option value="公寓(5樓含以下無電梯)">公寓(5樓含以下無電梯)</option>
-<option value="套房(1房1廳1衛)">套房(1房1廳1衛)</option>
-<option value="透天厝">透天厝</option>
-</select>
-&nbsp;
-&nbsp;
 
-<button class="submit" data-target="單價">單價</button>
-<button class="submit" data-target="總價">總價</button>
-&nbsp;
-&nbsp;
+<select id="type"></select>
 
-/ 總<select id="tt">
-<option value="案量">案量</option>
-<option value="金額">金額</option>
+<select id="parking"><option value="0">車位不拘</option><option value="1">有車位</option><option value="-1">無車位</option></select>
+
+<span>
+<input id="age_min" type="number" placeholder="屋齡下限"></input>
+ ~
+<input id="age_max" type="number" placeholder="屋齡上限"></input>
+</span>
+
+<br>
+
+<fieldset id="subareas"></fieldset>
+
+左 Y 軸：
+<select id="y_left">
+<option value="unit_price_avg">單價</option>
+<option value="price_avg">總價</option>
+<option value="cnt">總案量</option>
+<option value="price_total">總交易額</option>
 </select>
+
+&nbsp;&nbsp;
+
+右 Y 軸：
+<select id="y_right">
+<option value="unit_price_avg">單價</option>
+<option value="price_avg" selected>總價</option>
+<option value="cnt">總案量</option>
+<option value="price_total">總交易額</option>
+</select>
+
+&nbsp;&nbsp;
+
+<button onclick="update_chart()">產製圖表</button>
 
 </section>
 
-<div id='container'>
-</div>
+<section id="chart_wrapper">
+<canvas id="chart"></canvas>
+</section>
 
-<?php
-$PAGE['content'] = ob_get_clean();
-$PAGE['script_files'][] = '/s/main.js';
-$PAGE['script_files'][] = '/s/notification.js';
-$PAGE['script_files'][] = ['src' => 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js', 'defer' => false, 'async' => false];
-include __DIR__ .'/main.php';
+<script>
+const options = {};
+
+fetch("/api/option")
+.then(resp => resp.json())
+.then(data => {
+    for (let key in data) options[key] = data[key];
+
+    const area = document.getElementById("area");
+
+    area.querySelectorAll("option").forEach(ele => ele.remove());
+
+    const opt_placeholder = document.createElement("option");
+    opt_placeholder.textContent = "選擇縣市";
+    opt_placeholder.disabled = true;
+    opt_placeholder.selected = true;
+    area.append(opt_placeholder);
+
+    for (let area_name of Object.keys(data["area"])) {
+        const opt = document.createElement("option");
+        opt.textContent = area_name;
+        opt.value = area_name;
+        opt.id = `area_${area_name}`;
+        area.append(opt);
+    }
+
+    document.getElementById(`area_${Object.keys(data["area"])[0]}`).selected = true;
+    update_subareas();
+
+    const types = document.getElementById("type");
+    for (let type of data["type"]) {
+        const opt = document.createElement("option");
+        opt.textContent = type;
+        opt.value = type;
+        types.append(opt);
+    }
+});
+
+function update_subareas() {
+    const area = document.getElementById("area").value;
+
+    const subareas = document.getElementById("subareas");
+    subareas.querySelectorAll(".checkbox-wrapper").forEach(ele => ele.remove());
+
+    for (let subarea of options["area"][area]) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("checkbox-wrapper");
+
+        const opt = document.createElement("input");
+        opt.type = "checkbox";
+        opt.textContent = subarea;
+        opt.value = subarea;
+        opt.name = `subarea`;
+        opt.id = `subarea_${subarea}`;
+
+        const lbl = document.createElement("label");
+        lbl.textContent = `${subarea} `;
+        lbl.htmlFor = opt.id;
+
+        wrapper.append(opt);
+        wrapper.append(lbl);
+        subareas.append(wrapper);
+    }
+}
+
+</script>
+
+</body>
+</html>
