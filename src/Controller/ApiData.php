@@ -11,8 +11,10 @@ class ApiData extends ControllerBase
     {
         header('Content-Type: application/json');
         header('Cache-control: public max-age=86400');
+        [$sql, $data] = $this->getData(...$this->parseParams());
         echo json_encode([
-            'data' => $this->getData(...$this->parseParams()),
+            'data' => $data,
+            'sql' => $sql,
         ]);
     }
 
@@ -57,7 +59,7 @@ EOT;
             $result[$row["ym"]] = $row;
         }
 
-        return $result;
+        return [$sql, $result];
     }
 
     protected function parseParams() {
