@@ -31,6 +31,7 @@ SELECT count(*) AS cnt,
        sum(price) AS price_total,
        avg(price / area) AS unit_price_avg,
        avg(price) AS price_avg,
+       avg(area) AS area_avg,
        strftime("%Y/%m", transaction_date, 'unixepoch') as ym
 FROM house_transactions
 WHERE %CONDITIONS%
