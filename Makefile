@@ -1,6 +1,9 @@
 .PHONY: server
 
-build: public/build/option.json build/transactions.sqlite3
+build: download | public/build/option.json build/transactions.sqlite3
+
+download:
+	bin/getall.sh
 
 server:
 	php -S 0.0.0.0:8080 -t public/
