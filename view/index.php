@@ -15,7 +15,9 @@
 <option value="載入中" selected>載入中</option>
 </select>
 
-<select id="type"></select>
+<select id="type">
+<option value="">類型不拘</option>
+</select>
 
 <select id="parking"><option value="0">車位不拘</option><option value="1">有車位</option><option value="-1">無車位</option></select>
 

@@ -125,9 +125,11 @@ function update_chart_with_data(data) {
 function chart_params() {
     const params = {
         "area": document.getElementById("area").value,
-        "type": document.getElementById("type").value,
         "parking": document.getElementById("parking").value,
     };
+
+    const type = document.getElementById("type").value;
+    if (type) params.type = type;
 
     const subarea_eles = document.querySelectorAll("input[name=subarea]:checked");
     if (subarea_eles.length) {
