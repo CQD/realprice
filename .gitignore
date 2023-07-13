@@ -1,4 +1,5 @@
 /data/
 /build/
+/public/build/
 /vendor/
-composer.lock
+/composer.lock

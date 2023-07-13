@@ -64,7 +64,7 @@
 <script>
 const options = {};
 
-fetch("/api/option")
+fetch("/build/option.json")
 .then(resp => resp.json())
 .then(data => {
     for (let key in data) options[key] = data[key];
