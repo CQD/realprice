@@ -16,7 +16,7 @@ deep-clean: clean
 
 ########################
 
-vendor/autoload.php:
+vendor/autoload.php: composer.json
 	composer install
 
 public/build/option.json: build/transactions.sqlite3 bin/build_option.php
