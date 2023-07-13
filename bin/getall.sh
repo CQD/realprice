@@ -5,8 +5,8 @@ BASEDIR=$(dirname "$0")
 #################################
 # 先準備好 key 清單
 #################################
-keys=( "101S4" )
-for year in $(seq 102 111); do
+keys=( "101S4" "112S1" "112S2" )
+for year in $(seq 102 111) ; do
     for s in 1 2 3 4; do
         keys+=( "$year"S$s )
     done
