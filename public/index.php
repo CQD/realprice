@@ -6,7 +6,6 @@ $map = [
     '/' => 'Index',
     '/api/option' => 'ApiOption',
     '/api/data' => 'ApiData',
-    '/api' => 'Api',
     '404' => 'FourOFour',
 ];
 
