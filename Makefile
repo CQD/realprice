@@ -1,6 +1,6 @@
 .PHONY: server
 
-build: download | public/build/option.json build/transactions.sqlite3
+build: vendor/autoload.php download | public/build/option.json build/transactions.sqlite3
 
 download:
 	bin/getall.sh
@@ -15,6 +15,9 @@ deep-clean: clean
 	rm build/transactions.sqlite3 || true
 
 ########################
+
+vendor/autoload.php:
+	composer install
 
 public/build/option.json: build/transactions.sqlite3 bin/build_option.php
 	 bin/build_option.php > $@
