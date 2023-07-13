@@ -26,6 +26,16 @@ const data = {
     datasets:[],
 }
 
+function ytick(value, index, values) {
+    let foo = ['', '萬', '億', '兆', '京'];
+    let idx = 0;
+    while (value >= 10000) {
+        value /= 10000;
+        idx++;
+    }
+    return value + foo[idx];
+}
+
 const chart_config = {
     type: 'bar',
     data: data,
@@ -44,6 +54,10 @@ const chart_config = {
                 grid: {
                     drawOnChartArea: false,
                 },
+                ticks: {
+                    beginAtZero: true,
+                    callback: ytick,
+                },
             },
             yr: {
                 type: 'linear',
@@ -51,6 +65,10 @@ const chart_config = {
                 position: 'right',
                 grid: {
                     drawOnChartArea: false,
+                },
+                ticks: {
+                    beginAtZero: true,
+                    callback: ytick,
                 },
             },
         },
