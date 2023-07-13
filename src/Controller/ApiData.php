@@ -42,7 +42,7 @@ EOT;
         $start_time = strtotime("2012-08-01") - 10;
 
         $conditions = [
-            "(transaction_date - build_date)/86400/365 BETWEEN {$ages[0]} AND ({$ages[1]} + 1)",
+            "(transaction_date - build_date)/86400/365 BETWEEN {$ages[0]} AND {$ages[1]}",
             "transaction_date BETWEEN $start_time AND unixepoch()",
         ];
 
