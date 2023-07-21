@@ -1,32 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-date_default_timezone_set('Asia/Taipei');
+use function Q\RealPrice\Id\countyMap;
 
-$counties = [
-    '臺北市' => 'a',
-    '臺中市' => 'b',
-    '基隆市' => 'c',
-    '臺南市' => 'd',
-    '高雄市' => 'e',
-    '新北市' => 'f',
-    '宜蘭縣' => 'g',
-    '桃園縣' => 'h',
-    '嘉義市' => 'i',
-    '新竹縣' => 'j',
-    '苗栗縣' => 'k',
-    '南投縣' => 'm',
-    '彰化縣' => 'n',
-    '新竹市' => 'o',
-    '雲林縣' => 'p',
-    '嘉義縣' => 'q',
-    '屏東縣' => 't',
-    '花蓮縣' => 'u',
-    '臺東縣' => 'v',
-    '金門縣' => 'w',
-    '澎湖縣' => 'x',
-    '連江縣' => 'z',
-];
+require __DIR__ . "/../vendor/autoload.php";
+
+
+date_default_timezone_set('Asia/Taipei');
 
 $categories = [
     '不動產買賣' => 'a',
@@ -58,7 +38,7 @@ if (__FILE__ === realpath($_SERVER['SCRIPT_NAME'])) {
     $db->exec(file_get_contents(__DIR__ . '/create_tables.sql'));
 
     ini_set('memory_limit', '512M');
-    foreach ($counties as $county => $id) {
+    foreach (countyMap() as $county => $id) {
         process($id, $county);
     }
 }
