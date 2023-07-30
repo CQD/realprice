@@ -33,9 +33,9 @@
 
 左 Y 軸：
 <select id="y_left">
-<option value="unit_price_avg">單價</option>
-<option value="price_avg">總價</option>
-<option value="area_avg">坪數</option>
+<option value="unit_price_avg">平均單價</option>
+<option value="price_avg">平均房價</option>
+<option value="area_avg">平均坪數</option>
 <option value="cnt">總案量</option>
 <option value="price_total">總交易額</option>
 </select>
@@ -44,9 +44,9 @@
 
 右 Y 軸：
 <select id="y_right">
-<option value="unit_price_avg">單價</option>
-<option value="price_avg">總價</option>
-<option value="area_avg">坪數</option>
+<option value="unit_price_avg">平均單價</option>
+<option value="price_avg">平均房價</option>
+<option value="area_avg">平均坪數</option>
 <option value="cnt" selected>總案量</option>
 <option value="price_total">總交易額</option>
 </select>
