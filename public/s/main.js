@@ -45,6 +45,10 @@ const chart_config = {
             legend: {
                 position: 'top',
             },
+            title: {
+                display: true,
+                text: '',
+            }
         },
         scales: {
             y: {
@@ -78,15 +82,16 @@ const chart_config = {
 const chart = new Chart(ctx, chart_config);
 
 function update_chart() {
-    const url = "/api/data?" + new URLSearchParams(chart_params());
+    const params = chart_params();
+    const url = "/api/data?" + new URLSearchParams(params);
     console.log(url);
 
     fetch(url)
     .then(resp => resp.json())
-    .then(data => update_chart_with_data(data))
+    .then(data => update_chart_with_data(data, params))
 }
 
-function update_chart_with_data(data) {
+function update_chart_with_data(data, params) {
     const datasets = [];
 
     const y_left = document.getElementById("y_left").selectedOptions[0];
@@ -118,7 +123,26 @@ function update_chart_with_data(data) {
     datasets[1].type = "bar";
     datasets[1].yAxisID = "yr";
 
+    const PARKING_MAP = {
+        "0": "車位不拘",
+        "1": "有車位",
+        "-1": "無車位",
+    };
+
+
+
+    let title = [
+        params.area + ((params.subarea) ? ` (${params.subarea})` : ""),
+        (params.type) ? ` ${params.type}` : " 建築類型不拘",
+        PARKING_MAP[params.parking],
+        `屋齡 ${params.age_min}年 ~ ${params.age_max}年`,
+    ]
+    .join(" - ")
+    .replaceAll("undefined年", "不限")
+    .replaceAll(" 不限 ~ 不限", "不限")
+
     chart.data.datasets = datasets;
+    chart.options.plugins.title.text = title;
     chart.update();
 }
 
