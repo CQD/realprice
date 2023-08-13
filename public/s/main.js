@@ -148,6 +148,7 @@ function update_chart_with_data(data, params) {
 
 function chart_params() {
     const params = {
+        "v": ASSET_VERSION || (new Date().getDate()),
         "area": document.getElementById("area").value,
         "parking": document.getElementById("parking").value,
     };

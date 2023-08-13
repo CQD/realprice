@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>房價趨勢統計</title>
-<link type="text/css" rel="stylesheet" href="/s/main.css">
+<link type="text/css" rel="stylesheet" href="/s/main.css?v=<?=ASSET_VERSION?>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
-<script src="/s/main.js" defer></script>
+<script src="/s/main.js?v=<?=ASSET_VERSION?>" defer></script>
+<script>ASSET_VERSION = '<?=ASSET_VERSION?>';</script>
 </head>
 <body>
 

@@ -9,6 +9,7 @@ $map = [
     '404' => 'FourOFour',
 ];
 
+define("ASSET_VERSION", asset_ver());
 
 $path = $_SERVER['REQUEST_URI'];
 if (false !== $pos = strpos($path, '?')) {
@@ -34,4 +35,14 @@ function e($str, $type = 'html')
     ];
 
     return $funcs[$type]($str);
+}
+
+function asset_ver() {
+    if ($_SERVER["HTTP_HOST"] === "localhost:8080") {
+        return date("YmdHis");
+    }
+
+    $base = defined("GAE_DEPLOYMENT_ID") ? constant("GAE_DEPLOYMENT_ID") : date("YmdHis");
+    $hash = md5($base);
+    return substr($hash, 2, 12);
 }
