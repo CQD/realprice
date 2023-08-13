@@ -61,6 +61,9 @@
 <canvas id="chart"></canvas>
 </section>
 
+<footer>資料版本：20230811</footer>
+
+
 <script>
 const options = {};
 

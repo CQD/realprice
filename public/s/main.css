@@ -38,3 +38,9 @@ section#input{
 #chart{
     width:100%;
 }
+
+footer{
+    max-width:1100px;
+    margin:10px auto;
+    color:#777;
+}
