@@ -214,7 +214,6 @@ function chart_params() {
 
 function update_chart_with_query() {
     const params = Object.fromEntries((new URLSearchParams(window.location.search)).entries());
-    params.v = ASSET_VERSION || (new Date().getDate());
 
     for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
         if (!params.hasOwnProperty(field)) continue;
@@ -227,6 +226,13 @@ function update_chart_with_query() {
         params.subarea.split(",").forEach(subarea => {
             document.getElementById(`subarea_${subarea}`).checked = true;
         });
+    }
+
+    params.v = ASSET_VERSION || (new Date().getDate());
+    for (const field of ["y_right", "y_left"]) {
+        if (params.hasOwnProperty(field)) {
+            delete params[field];
+        }
     }
 
     update_chart(params, push_history=false);
