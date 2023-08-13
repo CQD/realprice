@@ -11,6 +11,14 @@
 </head>
 <body>
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XPVFS6XXKD"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XPVFS6XXKD');
+</script>
+
 <section><h1>房價趨勢統計</h1><small id="pagetitle"></small></section>
 <section id="input">
 
