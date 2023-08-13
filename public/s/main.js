@@ -215,6 +215,8 @@ function chart_params() {
 function update_chart_with_query() {
     const params = Object.fromEntries((new URLSearchParams(window.location.search)).entries());
 
+    if (!params.hasOwnProperty("area")) return;
+
     for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
         if (!params.hasOwnProperty(field)) continue;
         document.getElementById(field).value = params[field];
