@@ -10,7 +10,7 @@ class ApiData extends ControllerBase
     protected function logic()
     {
         header('Content-Type: application/json');
-        // header('Cache-control: public, max-age=86400');
+        header('Cache-control: public, max-age=86400');
         [$sql, $data] = $this->getData(...$this->parseParams());
 
         $response = [

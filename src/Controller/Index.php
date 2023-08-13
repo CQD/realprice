@@ -8,6 +8,7 @@ class Index extends ControllerBase
     protected function logic()
     {
         global $PAGE;
+        header('Cache-control: public, max-age=3600');
         $PAGE['title'] = '首頁';
     }
 }
