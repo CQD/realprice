@@ -90,9 +90,6 @@ EOT;
     }
 
     protected function parseParams() {
-        $truthy = ["true", "1", "yes"];
-        $falsy = ["false", "0", "no"];
-
         $counties = ($_GET["area"] ?? false) ? explode(",", $_GET["area"]) : null;
         $districts = ($_GET["subarea"] ?? false) ? explode(",", $_GET["subarea"]) : null;
         $type = $_GET["type"] ?? null;
