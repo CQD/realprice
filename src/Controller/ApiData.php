@@ -14,7 +14,6 @@ class ApiData extends ControllerBase
         [$sql, $data] = $this->getData(...$this->parseParams());
         echo json_encode([
             'data' => $data,
-            'sql' => $sql,
         ]);
     }
 
