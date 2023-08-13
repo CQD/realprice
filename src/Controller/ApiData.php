@@ -42,21 +42,48 @@ EOT;
         $start_time = strtotime("2012-08-01") - 10;
 
         $conditions = [
-            "(transaction_date - build_date)/86400/365 BETWEEN {$ages[0]} AND {$ages[1]}",
+            "(transaction_date - build_date)/86400/365 BETWEEN CAST(:agemin AS number) AND CAST(:agemax AS number)",
             "transaction_date BETWEEN $start_time AND unixepoch()",
+        ];
+
+        $condition_params = [
+            "agemin" => (float) $ages[0],
+            "agemax" => (float) $ages[1],
         ];
 
         if ($parking > 0) $conditions[] = "parking_area > 0";
         elseif ($parking < 0) $conditions[] = "parking_area = 0";
 
-        if ($type) $conditions[] = "type = '$type'"; # XXX injection
-        if ($counties) $conditions[] = "county in ('" . implode("','", $counties) . "')"; # XXX injection
-        if ($districts) $conditions[] = "district in ('" . implode("','", $districts) . "')"; # XXX injection
+        if ($type) {
+            $conditions[] = "type = :type";
+            $condition_params["type"] = $type;
+        }
+
+        if ($counties) {
+            $marks = [];
+            foreach ($counties as $i => $county) {
+                $condition_params["county$i"] = $county;
+                $marks[] = ":county$i";
+            }
+            $conditions[] = "county in (" . implode(",", $marks) . ")";
+        }
+
+        if ($districts) {
+            $marks = [];
+            foreach ($districts as $i => $district) {
+                $condition_params["district$i"] = $district;
+                $marks[] = ":district$i";
+            }
+            $conditions[] = "district in (" . implode(",", $marks) . ")";
+        }
 
         $sql = str_replace('%CONDITIONS%', implode(" AND ", $conditions), $sql);
 
         $result = [];
-        foreach ($this->db->query($sql, PDO::FETCH_ASSOC) as $row) {
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute($condition_params);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $result[$row["ym"]] = $row;
         }
 
