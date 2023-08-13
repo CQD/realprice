@@ -84,7 +84,6 @@ const chart = new Chart(ctx, chart_config);
 function update_chart() {
     const params = chart_params();
     const url = "/api/data?" + new URLSearchParams(params);
-    console.log(url);
 
     fetch(url)
     .then(resp => resp.json())
