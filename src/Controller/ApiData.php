@@ -110,8 +110,8 @@ EOT;
         $districts = ($_GET["subarea"] ?? false) ? explode(",", $_GET["subarea"]) : null;
         $type = $_GET["type"] ?? null;
 
-        $age_min = (float) ($_GET["age_min"] ?? -1);
-        $age_max = (float) ($_GET["age_max"] ?? 9999);
+        $age_min = (float) ($_GET["age_min"] ?? -999999);
+        $age_max = (float) ($_GET["age_max"] ?? 999999);
 
         $parking = (int) ($_GET["parking"] ?? 0);
 
