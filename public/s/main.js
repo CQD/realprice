@@ -171,6 +171,10 @@ function update_chart_with_data(data, params) {
     chart.data.datasets = datasets;
     chart.options.plugins.title.text = title;
     chart.update();
+
+    document.getElementById("pagetitle").textContent = title;
+    document.title = `房價趨勢統計 - ${title}`;
+
 }
 
 function chart_params() {

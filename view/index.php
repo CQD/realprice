@@ -11,6 +11,7 @@
 </head>
 <body>
 
+<section><h1>房價趨勢統計</h1><small id="pagetitle"></small></section>
 <section id="input">
 
 <select id="area" onchange="update_subareas()">
