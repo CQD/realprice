@@ -3,13 +3,14 @@
 set -eE
 
 if [ -z "$1" ]; then
-    echo "沒有輸入 key 無法處理資料"
-    echo "用法： process.sh {key} [targetdir]"
+    echo "沒有輸入檔案路徑無法處理資料"
+    echo "用法： process.sh {zipfile} {key} [targetdir]"
     false
 fi
 
-key=$1
-targetdir=${2:-$(pwd)}
+zipfile=$1
+key=$2
+targetdir=${3:-$(pwd)}
 BASEDIR=$(dirname "$0")
 
 trap "rm -f $targetdir/$key.zip" EXIT
@@ -42,21 +43,8 @@ function main {
         false
     fi
 
-    echo 下載 $key.zip
-
-    [[ $key =~ ^[0-9]{8}$ ]] \
-        && curl -# "https://plvr.land.moi.gov.tw/DownloadHistory?type=history&fileName=${key}" -o $targetdir/$key.zip \
-        || curl -# "https://plvr.land.moi.gov.tw/DownloadSeason?season=${key}&type=zip&fileName=lvr_landxml.zip" -o $targetdir/$key.zip \
-        || (echo "無法下載 key=$key 的資料" && return -1)
-
-    if ! unzip -t $targetdir/$key.zip ; then
-        echo "無法解壓縮 $key.zip"
-        return -1
-    fi
-
     echo 解開 zip
-    unzip -q -LL -d $targetdir/$key $targetdir/$key.zip
-    rm $targetdir/$key.zip
+    unzip -q -LL -d $targetdir/$key $zipfile
 
     echo 砍掉不要的檔案
     for file in $targetdir/$key/*; do
