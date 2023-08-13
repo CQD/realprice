@@ -1,4 +1,5 @@
-const ctx = document.getElementById("chart");
+const chart_canvas = document.getElementById("chart");
+const ctx = chart_canvas.getContext("2d");
 
 function ym_list() {
     const ym_list = [];
@@ -79,11 +80,15 @@ const chart_config = {
     }
 };
 
-const chart = new Chart(ctx, chart_config);
+const chart = new Chart(chart_canvas, chart_config);
 
 function update_chart(params, push_history=true) {
     params = params || chart_params();
     const url = "/api/data?" + new URLSearchParams(params);
+
+    ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("載入中...", 30, 30);
 
     fetch(url)
     .then(resp => resp.json())
