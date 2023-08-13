@@ -49,7 +49,7 @@ EOT;
         $end_time = time();
 
         $conditions = [
-            "(transaction_date - build_date)/86400/365 BETWEEN CAST(:agemin AS number) AND CAST(:agemax AS number)",
+            "(transaction_date - build_date)/86400.0/365.0 BETWEEN CAST(:agemin AS number) AND CAST(:agemax AS number)",
             "transaction_date BETWEEN $start_time AND $end_time",
         ];
 
