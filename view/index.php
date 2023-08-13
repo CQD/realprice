@@ -24,16 +24,16 @@
 <select id="parking"><option value="0">車位不拘</option><option value="1">有車位</option><option value="-1">無車位</option></select>
 
 <span>
-<input id="age_min" type="number" placeholder="屋齡下限"></input>
+<input id="age_min" type="number" placeholder="屋齡下限" size="10"></input>
  ~
-<input id="age_max" type="number" placeholder="屋齡上限"></input>
+<input id="age_max" type="number" placeholder="屋齡上限" size="10"></input>
 </span>
 
 <br>
 
 <fieldset id="subareas"></fieldset>
 
-左 Y 軸：
+左 Y 軸
 <select id="y_left">
 <option value="unit_price_avg">平均單價</option>
 <option value="price_avg">平均房價</option>
@@ -44,7 +44,7 @@
 
 &nbsp;&nbsp;
 
-右 Y 軸：
+右 Y 軸
 <select id="y_right">
 <option value="unit_price_avg">平均單價</option>
 <option value="price_avg">平均房價</option>

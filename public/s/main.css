@@ -37,6 +37,7 @@ section#input{
 
 #chart{
     width:100%;
+    height:100%;
 }
 
 footer{
@@ -47,4 +48,13 @@ footer{
 }
 #footer_msg{
     font-family:monospace;
+}
+
+@media (max-width: 640px){
+    #subareas{
+        gap:2px;
+    }
+    #chart_wrapper {
+        height: 70vh;
+    }
 }
