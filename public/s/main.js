@@ -86,6 +86,16 @@ const chart = new Chart(chart_canvas, chart_config);
 
 function update_chart(params, push_history=true) {
     params = params || chart_params();
+
+    let ordered_params = Object.keys(params).sort().reduce(
+        (obj, key) => {
+            obj[key] = params[key];
+            return obj;
+        },
+        {}
+    );
+    params = ordered_params;
+
     const url = "/api/data?" + new URLSearchParams(params);
 
     ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
