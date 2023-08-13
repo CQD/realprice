@@ -88,7 +88,22 @@ function update_chart() {
 
     fetch(url)
     .then(resp => resp.json())
-    .then(data => update_chart_with_data(data, params))
+    .then(resp => {
+        update_chart_with_data(resp.data, params);
+
+        const footer_msg = document.getElementById("footer_msg");
+        footer_msg.innerHTML = "";
+
+        for (const key in resp) {
+            if (key == "data") continue;
+            footer_msg.appendChild(document.createElement("hr"));
+            for (const txt of [key, resp[key]]) {
+                const ele = document.createElement("div");
+                ele.textContent = txt;
+                footer_msg.appendChild(ele);
+            }
+        }
+    })
 }
 
 function update_chart_with_data(data, params) {
@@ -104,8 +119,8 @@ function update_chart_with_data(data, params) {
     for (const [field, field_name] of f) {
         const values = [];
         for (const ym of ym_list()) {
-            if (data.data[ym]) {
-                values.push(data.data[ym][field] || null);
+            if (data[ym]) {
+                values.push(data[ym][field] || null);
             } else {
                 values.push(null);
             }

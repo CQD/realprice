@@ -62,7 +62,10 @@
 <canvas id="chart"></canvas>
 </section>
 
-<footer>資料版本：20230811</footer>
+<footer>
+<div>資料版本：20230811</div>
+<div id="footer_msg"></div>
+</footer>
 
 
 <script>

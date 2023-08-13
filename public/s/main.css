@@ -43,4 +43,8 @@ footer{
     max-width:1100px;
     margin:10px auto;
     color:#777;
+    padding-bottom: 2em;
+}
+#footer_msg{
+    font-family:monospace;
 }

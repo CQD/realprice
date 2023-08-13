@@ -12,9 +12,16 @@ class ApiData extends ControllerBase
         header('Content-Type: application/json');
         // header('Cache-control: public, max-age=86400');
         [$sql, $data] = $this->getData(...$this->parseParams());
-        echo json_encode([
+
+        $response = [
             'data' => $data,
-        ]);
+        ];
+
+        if ($_SERVER["HTTP_HOST"] === "localhost:8080") {
+            $response["sql"] = $sql;
+        }
+
+        echo json_encode($response);
     }
 
     protected function getData(
@@ -86,6 +93,14 @@ EOT;
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $result[$row["ym"]] = $row;
         }
+
+        foreach ($condition_params as $key => $value) {
+            if (is_string($value)) {
+                $value = "'$value'";
+            }
+            $sql = str_replace(":$key", $value, $sql);
+        }
+        $sql = str_replace("\n", " ", $sql);
 
         return [$sql, $result];
     }
