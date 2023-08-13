@@ -6,7 +6,6 @@
 <link type="text/css" rel="stylesheet" href="/s/main.css?v=<?=ASSET_VERSION?>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
 <script src="/s/main.js?v=<?=ASSET_VERSION?>" defer></script>
-<script>ASSET_VERSION = '<?=ASSET_VERSION?>';</script>
 </head>
 <body>
 
@@ -70,68 +69,7 @@
 
 <script>
 const options = {};
-
-fetch("/build/option.json")
-.then(resp => resp.json())
-.then(data => {
-    for (let key in data) options[key] = data[key];
-
-    const area = document.getElementById("area");
-
-    area.querySelectorAll("option").forEach(ele => ele.remove());
-
-    const opt_placeholder = document.createElement("option");
-    opt_placeholder.textContent = "選擇縣市";
-    opt_placeholder.disabled = true;
-    opt_placeholder.selected = true;
-    area.append(opt_placeholder);
-
-    for (let area_name of Object.keys(data["area"])) {
-        const opt = document.createElement("option");
-        opt.textContent = area_name;
-        opt.value = area_name;
-        opt.id = `area_${area_name}`;
-        area.append(opt);
-    }
-
-    document.getElementById(`area_${Object.keys(data["area"])[0]}`).selected = true;
-    update_subareas();
-
-    const types = document.getElementById("type");
-    for (let type of data["type"]) {
-        const opt = document.createElement("option");
-        opt.textContent = type;
-        opt.value = type;
-        types.append(opt);
-    }
-});
-
-function update_subareas() {
-    const area = document.getElementById("area").value;
-
-    const subareas = document.getElementById("subareas");
-    subareas.querySelectorAll(".checkbox-wrapper").forEach(ele => ele.remove());
-
-    for (let subarea of options["area"][area]) {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("checkbox-wrapper");
-
-        const opt = document.createElement("input");
-        opt.type = "checkbox";
-        opt.textContent = subarea;
-        opt.value = subarea;
-        opt.name = `subarea`;
-        opt.id = `subarea_${subarea}`;
-
-        const lbl = document.createElement("label");
-        lbl.textContent = `${subarea} `;
-        lbl.htmlFor = opt.id;
-
-        wrapper.append(opt);
-        wrapper.append(lbl);
-        subareas.append(wrapper);
-    }
-}
+ASSET_VERSION = '<?=ASSET_VERSION?>';
 
 </script>
 

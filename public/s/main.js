@@ -81,8 +81,8 @@ const chart_config = {
 
 const chart = new Chart(ctx, chart_config);
 
-function update_chart() {
-    const params = chart_params();
+function update_chart(params, push_history=true) {
+    params = params || chart_params();
     const url = "/api/data?" + new URLSearchParams(params);
 
     fetch(url)
@@ -102,7 +102,15 @@ function update_chart() {
                 footer_msg.appendChild(ele);
             }
         }
-    })
+    });
+
+    params.y_left = document.getElementById("y_left").value;
+    params.y_right = document.getElementById("y_right").value;
+    delete params.v;
+
+    if (push_history) {
+        window.history.pushState(params, chart.options.plugins.title.text, "?" + new URLSearchParams(params));
+    }
 }
 
 function update_chart_with_data(data, params) {
@@ -143,8 +151,6 @@ function update_chart_with_data(data, params) {
         "-1": "無車位",
     };
 
-
-
     let title = [
         params.area + ((params.subarea) ? ` (${params.subarea})` : ""),
         (params.type) ? ` ${params.type}` : " 建築類型不拘",
@@ -170,7 +176,7 @@ function chart_params() {
     const type = document.getElementById("type").value;
     if (type) params.type = type;
 
-    const subarea_eles = document.querySelectorAll("input[name=subarea]:checked");
+    const subarea_eles = document.querySelectorAll("input[name='subarea']:checked");
     if (subarea_eles.length) {
         params.subarea = Array.from(subarea_eles).map(ele => ele.value).join(",");
     }
@@ -184,3 +190,92 @@ function chart_params() {
 
     return params;
 }
+
+function update_chart_with_query() {
+    const params = Object.fromEntries((new URLSearchParams(window.location.search)).entries());
+    params.v = ASSET_VERSION || (new Date().getDate());
+
+    for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
+        if (!params.hasOwnProperty(field)) continue;
+        document.getElementById(field).value = params[field];
+    }
+
+    update_subareas();
+
+    if (params.hasOwnProperty("subarea")) {
+        params.subarea.split(",").forEach(subarea => {
+            document.getElementById(`subarea_${subarea}`).checked = true;
+        });
+    }
+
+    update_chart(params, push_history=false);
+}
+
+function update_subareas() {
+    const area = document.getElementById("area").value;
+
+    const subareas = document.getElementById("subareas");
+    subareas.querySelectorAll(".checkbox-wrapper").forEach(ele => ele.remove());
+
+    for (let subarea of options["area"][area]) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("checkbox-wrapper");
+
+        const opt = document.createElement("input");
+        opt.type = "checkbox";
+        opt.textContent = subarea;
+        opt.value = subarea;
+        opt.name = `subarea`;
+        opt.id = `subarea_${subarea}`;
+
+        const lbl = document.createElement("label");
+        lbl.textContent = `${subarea} `;
+        lbl.htmlFor = opt.id;
+
+        wrapper.append(opt);
+        wrapper.append(lbl);
+        subareas.append(wrapper);
+    }
+}
+
+//////////////////////////////
+
+window.addEventListener("popstate", (event) => {
+    update_chart_with_query();
+});
+
+(async () => {
+    await fetch("/build/option.json")
+    .then(resp => resp.json())
+    .then(data => {
+        for (let key in data) options[key] = data[key];
+
+        const area = document.getElementById("area");
+
+        area.querySelectorAll("option").forEach(ele => ele.remove());
+
+        for (let area_name of Object.keys(data["area"])) {
+            const opt = document.createElement("option");
+            opt.textContent = area_name;
+            opt.value = area_name;
+            opt.id = `area_${area_name}`;
+            area.append(opt);
+        }
+
+        area.value = Object.keys(data["area"])[0];
+        update_subareas();
+
+        const types = document.getElementById("type");
+        for (let type of data["type"]) {
+            const opt = document.createElement("option");
+            opt.textContent = type;
+            opt.value = type;
+            types.append(opt);
+        }
+    });
+
+    if (window.location.search) {
+        update_chart_with_query();
+    }
+
+})();
