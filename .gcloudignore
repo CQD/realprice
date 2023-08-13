@@ -1,0 +1,7 @@
+.gcloudignore
+.git
+.gitignore
+.phpunit.result.cache
+/vendor/
+/bin/
+/data/
