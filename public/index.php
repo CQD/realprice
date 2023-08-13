@@ -42,7 +42,18 @@ function asset_ver() {
         return date("YmdHis");
     }
 
-    $base = defined("GAE_DEPLOYMENT_ID") ? constant("GAE_DEPLOYMENT_ID") : date("YmdHis");
+    $base = "";
+    foreach (["GAE_DEPLOYMENT_ID", "GAE_VERSION", "GAE_INSTANCE"] as $key) {
+        if (defined($key)) {
+            $base = constant($key);
+        }
+        if ($base) {
+            break;
+        }
+    }
+
+    $base = $base ?? date("Ymd");
     $hash = md5($base);
+
     return substr($hash, 2, 12);
 }
