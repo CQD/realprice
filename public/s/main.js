@@ -183,7 +183,7 @@ function update_chart_with_data(data, params) {
     chart.update();
 
     document.getElementById("pagetitle").textContent = title;
-    document.title = `房價趨勢統計 - ${title}`;
+    document.title = `${title} | 房價趨勢統計`;
 
 }
 
