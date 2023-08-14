@@ -27,7 +27,7 @@ $og_title = og_title();
 <head>
 <meta charset="UTF-8">
 <title>房價趨勢統計</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1">
 <link rel="icon" type="image/png" href="/favicon.png" >
 <link rel="apple-touch-icon" href="/favicon.png">
 <link type="text/css" rel="stylesheet" href="/s/main.css?v=<?=ASSET_VERSION?>">
