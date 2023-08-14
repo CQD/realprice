@@ -221,13 +221,23 @@ function update_chart_with_query() {
 
     if (!params.hasOwnProperty("area")) return;
 
+    const DEFAULT_VALUES = {
+        "y_left": "unit_price_avg",
+        "y_right": "cnt",
+        "parking": "0",
+    };
     for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
-        if (!params.hasOwnProperty(field)) continue;
+        const field_ele = document.getElementById(field);
+        if (!params.hasOwnProperty(field)) {
+            field_ele.value = DEFAULT_VALUES[field] || "";
+            continue;
+        }
         document.getElementById(field).value = params[field];
     }
 
     update_subareas();
 
+    document.querySelectorAll("input[name='subarea']").forEach(ele => ele.checked = false);
     if (params.hasOwnProperty("subarea")) {
         params.subarea.split(",").forEach(subarea => {
             document.getElementById(`subarea_${subarea}`).checked = true;
