@@ -127,7 +127,7 @@ function update_chart(params, push_history=true) {
 
     const title = title_from_params(params);
     document.getElementById("pagetitle").textContent = title;
-    document.title = `${title} | 房價趨勢統計`;
+    document.title = `${title} | 實價登錄房價趨勢`;
     if (push_history) {
         window.history.pushState(params, null, "?" + new URLSearchParams(params));
     }

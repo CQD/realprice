@@ -1,7 +1,7 @@
 <?php
 
 function og_title() {
-    if (!isset($_GET["area"])) return "房價趨勢統計";
+    if (!isset($_GET["area"])) return "實價登錄房價趨勢";
 
     $PARKING_MAP = [
         "0" => "車位不拘",
@@ -26,12 +26,12 @@ $og_title = og_title();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>房價趨勢統計</title>
+<title>實價登錄房價趨勢</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1">
 <link rel="icon" type="image/png" href="/favicon.png" >
 <link rel="apple-touch-icon" href="/favicon.png">
 <link type="text/css" rel="stylesheet" href="/s/main.css?v=<?=ASSET_VERSION?>">
-<link rel="index" href="https://realprice.cqd.tw/" title="房價趨勢統計">
+<link rel="index" href="https://realprice.cqd.tw/" title="實價登錄房價趨勢">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
 <script src="/s/main.js?v=<?=ASSET_VERSION?>" defer></script>
 
@@ -51,7 +51,7 @@ gtag('js', new Date());
 gtag('config', 'G-XPVFS6XXKD');
 </script>
 
-<section><h1>房價趨勢統計</h1><small id="pagetitle"></small></section>
+<section><h1>實價登錄房價趨勢</h1><small id="pagetitle"></small></section>
 <section id="input">
 
 <select id="area" onchange="update_subareas()">
