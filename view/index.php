@@ -1,4 +1,28 @@
-<!DOCTYPE html>
+<?php
+
+function og_title() {
+    if (!isset($_GET["area"])) return "房價趨勢統計";
+
+    $PARKING_MAP = [
+        "0" => "車位不拘",
+        "1" => "有車位",
+        "-1" => "無車位",
+    ];
+
+    $og_title = [
+        $_GET["area"] . ((isset($_GET["subarea"])) ? " (" . $_GET["subarea"] . ")" : ""),
+        (isset($_GET["type"])) ? " " . $_GET["type"] : " 建築類型不拘",
+        $PARKING_MAP[$_GET["parking"] ?: 0],
+        "屋齡 " . ($_GET["age_min"] ?? "不限") . "年 ~ " . ($_GET["age_max"] ?? "不限") . "年",
+    ];
+    $og_title = implode(" - ", $og_title);
+    $og_title = str_replace("不限年", "不限", $og_title);
+    $og_title = str_replace(" 不限 ~ 不限", "不限", $og_title);
+
+    return $og_title;
+}
+$og_title = og_title();
+?><!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -10,7 +34,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
 <script src="/s/main.js?v=<?=ASSET_VERSION?>" defer></script>
 
+<meta property="og:title" content="<?=e($og_title)?>">
 <meta property="og:image" content="https://realprice.cqd.tw/og.png">
+<meta name="twitter:title" content="<?=e($og_title)?>">
 <meta name="twitter:image" content="https://realprice.cqd.tw/og.png">
 
 </head>
