@@ -104,7 +104,8 @@ gtag('config', 'G-XPVFS6XXKD');
 </section>
 
 <footer>
-<div>資料版本：20230811</div>
+<div>資料版本：20230811<br>
+以整體狀況為主，不在意單一建案，不適合用來作為「這一戶好嗎？該買嗎」的基準。</div>
 <div id="footer_msg"></div>
 </footer>
 
