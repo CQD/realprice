@@ -12,7 +12,7 @@ function og_title() {
     $og_title = [
         $_GET["area"] . ((isset($_GET["subarea"])) ? " (" . $_GET["subarea"] . ")" : ""),
         (isset($_GET["type"])) ? " " . $_GET["type"] : " 建築類型不拘",
-        $PARKING_MAP[$_GET["parking"] ?: 0],
+        $PARKING_MAP[$_GET["parking"] ?? 0],
         "屋齡 " . ($_GET["age_min"] ?? "不限") . "年 ~ " . ($_GET["age_max"] ?? "不限") . "年",
     ];
     $og_title = implode(" - ", $og_title);
