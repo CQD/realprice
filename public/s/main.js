@@ -125,9 +125,33 @@ function update_chart(params, push_history=true) {
     params.y_right = document.getElementById("y_right").value;
     delete params.v;
 
+    const title = title_from_params(params);
+    document.getElementById("pagetitle").textContent = title;
+    document.title = `${title} | 房價趨勢統計`;
     if (push_history) {
-        window.history.pushState(params, chart.options.plugins.title.text, "?" + new URLSearchParams(params));
+        window.history.pushState(params, null, "?" + new URLSearchParams(params));
     }
+
+}
+
+function title_from_params(params) {
+    const PARKING_MAP = {
+        "0": "車位不拘",
+        "1": "有車位",
+        "-1": "無車位",
+    };
+
+    let title = [
+        params.area + ((params.subarea) ? ` (${params.subarea})` : ""),
+        (params.type) ? ` ${params.type}` : " 建築類型不拘",
+        PARKING_MAP[params.parking],
+        `屋齡 ${params.age_min}年 ~ ${params.age_max}年`,
+    ]
+    .join(" - ")
+    .replaceAll("undefined年", "不限")
+    .replaceAll(" 不限 ~ 不限", "不限")
+
+    return title;
 }
 
 function update_chart_with_data(data, params) {
@@ -162,29 +186,9 @@ function update_chart_with_data(data, params) {
     datasets[1].type = "bar";
     datasets[1].yAxisID = "yr";
 
-    const PARKING_MAP = {
-        "0": "車位不拘",
-        "1": "有車位",
-        "-1": "無車位",
-    };
-
-    let title = [
-        params.area + ((params.subarea) ? ` (${params.subarea})` : ""),
-        (params.type) ? ` ${params.type}` : " 建築類型不拘",
-        PARKING_MAP[params.parking],
-        `屋齡 ${params.age_min}年 ~ ${params.age_max}年`,
-    ]
-    .join(" - ")
-    .replaceAll("undefined年", "不限")
-    .replaceAll(" 不限 ~ 不限", "不限")
-
     chart.data.datasets = datasets;
-    chart.options.plugins.title.text = title;
+    chart.options.plugins.title.text = title_from_params(params);
     chart.update();
-
-    document.getElementById("pagetitle").textContent = title;
-    document.title = `${title} | 房價趨勢統計`;
-
 }
 
 function chart_params() {
