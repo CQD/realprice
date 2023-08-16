@@ -14,6 +14,7 @@ class ApiOption extends ControllerBase
         echo json_encode([
             'area' => $this->getArea(),
             'type' => $this->getType(),
+            'dataver' => $this->getDataver(),
         ]);
     }
 
@@ -47,5 +48,12 @@ EOT;
         }
 
         return $result;
+    }
+
+    protected function getDataver() {
+        $dirs = scandir(__DIR__ . '/../../data/');
+
+        if (!$dirs) return "不明";
+        return max($dirs);
     }
 }

@@ -105,7 +105,7 @@ gtag('config', 'G-XPVFS6XXKD');
 </section>
 
 <footer>
-<div>資料版本：20230811<br>
+<div>資料版本：<span id="dataver">不明</span><br>
 程式碼：<a href="https://github.com/CQD/realprice">https://github.com/CQD/realprice</a><br>
 以整體狀況為主，不在意單一建案，不適合用來作為「這一戶好嗎？該買嗎」的基準。</div>
 <div id="footer_msg"></div>

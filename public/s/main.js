@@ -315,6 +315,8 @@ window.addEventListener("popstate", (event) => {
             opt.value = type;
             types.append(opt);
         }
+
+        if (data.dataver) document.getElementById("dataver").textContent = data.dataver;
     });
 
     if (window.location.search) {
