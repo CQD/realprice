@@ -38,7 +38,7 @@ function e($str, $type = 'html')
 }
 
 function asset_ver() {
-    if ($_SERVER["HTTP_HOST"] === "localhost:8080") {
+    if (($_SERVER["HTTP_HOST"] ?? "") === "localhost:8080") {
         return date("YmdHis");
     }
 
