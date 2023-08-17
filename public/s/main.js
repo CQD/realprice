@@ -160,11 +160,11 @@ function update_chart_with_data(data, params) {
     const y_left = document.getElementById("y_left").selectedOptions[0];
     const y_right = document.getElementById("y_right").selectedOptions[0];
     const f = [
-        [y_left.value, y_left.textContent],
-        [y_right.value, y_right.textContent],
+        [y_left.value,  y_left.textContent,  "#ff8012"],
+        [y_right.value, y_right.textContent, "#aaccff"],
     ];
 
-    for (const [field, field_name] of f) {
+    for (const [field, field_name, color] of f) {
         const values = [];
         for (const ym of ym_list()) {
             if (data[ym]) {
@@ -177,6 +177,8 @@ function update_chart_with_data(data, params) {
         const dataset = {
             label: field_name,
             data: values,
+            borderColor: color,
+            backgroundColor: color,
         }
         datasets.push(dataset);
     }
