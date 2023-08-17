@@ -1,6 +1,6 @@
 APPLICATION_ID=mythical-temple-395806
 
-build: vendor/autoload.php download | public/build/option.json build/transactions.sqlite3
+build: vendor/autoload.php download | option build/transactions.sqlite3
 
 download:
 	bin/getall.sh
@@ -22,10 +22,15 @@ deploy:
 vendor/autoload.php: composer.json
 	composer install
 
+option: public/build/option.json build/option.php
+
 public/build/option.json: build/transactions.sqlite3 bin/build_option.php
 	 bin/build_option.php > $@
+
+build/option.php: public/build/option.json
+	bin/json2php.php $< > $@
 
 build/transactions.sqlite3: bin/getall.sh
 	bin/build_sqlite.php > $@
 
-.PHONY: server
+.PHONY: server build/option.php download
