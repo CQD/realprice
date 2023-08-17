@@ -87,6 +87,7 @@ const chart = new Chart(chart_canvas, chart_config);
 function update_chart(params, push_history=true) {
     params = params || chart_params();
 
+    // 依照 key 排序，確保 URL 參數的順序一致，以提高 cache 命中率
     let ordered_params = Object.keys(params).sort().reduce(
         (obj, key) => {
             obj[key] = params[key];
