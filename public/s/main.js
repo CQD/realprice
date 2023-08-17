@@ -290,7 +290,7 @@ window.addEventListener("popstate", (event) => {
 });
 
 (async () => {
-    await fetch("/build/option.json")
+    await fetch(`/build/option.json?v=${ASSET_VERSION}`)
     .then(resp => resp.json())
     .then(data => {
         for (let key in data) options[key] = data[key];
