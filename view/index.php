@@ -92,6 +92,9 @@ gtag('config', 'G-XPVFS6XXKD');
 
 左 Y 軸
 <select id="y_left">
+<option value="unit_price_median">中位數單價</option>
+<option value="price_median">中位數房價</option>
+<option value="area_median">中位數坪數</option>
 <option value="unit_price_avg">平均單價</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>
@@ -103,6 +106,9 @@ gtag('config', 'G-XPVFS6XXKD');
 
 右 Y 軸
 <select id="y_right">
+<option value="unit_price_median">中位數單價</option>
+<option value="price_median">中位數房價</option>
+<option value="area_median">中位數坪數</option>
 <option value="unit_price_avg">平均單價</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>

@@ -225,7 +225,7 @@ function update_chart_with_query() {
     if (!params.hasOwnProperty("area")) return;
 
     const DEFAULT_VALUES = {
-        "y_left": "unit_price_avg",
+        "y_left": "unit_price_median",
         "y_right": "cnt",
         "parking": "0",
     };

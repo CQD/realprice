@@ -36,8 +36,11 @@ class ApiData extends ControllerBase
 SELECT count(*) AS cnt,
        sum(price) AS price_total,
        avg(price / area) AS unit_price_avg,
+       median(price / area) AS unit_price_median,
        avg(price) AS price_avg,
+       median(price) AS price_median,
        avg(area) AS area_avg,
+       median(area) AS area_median,
        strftime("%Y/%m", transaction_date, 'unixepoch') as ym
 FROM house_transactions
 WHERE %CONDITIONS%
