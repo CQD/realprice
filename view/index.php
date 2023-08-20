@@ -1,19 +1,35 @@
 <?php
+global $PARKING_MAP, $parking, $type, $age_min, $age_max;
+
+$OPTION = require __DIR__ . "/../build/option.php";
+
+$PARKING_MAP = [
+    "0" => "車位不拘",
+    "1" => "有車位",
+    "-1" => "無車位",
+];
+
+$parking = $_GET["parking"] ?? 0;
+$parking = ($PARKING_MAP[$parking] ?? false) ? $parking : 0;
+
+$type = $_GET["type"] ?? "";
+$type = in_array($type, $OPTION["type"]) ? $type : "";
+
+$age_min = $_GET["age_min"] ?? null ?: null;
+$age_max = $_GET["age_max"] ?? null ?: null;
+if (!is_numeric($age_min)) $age_min = null;
+if (!is_numeric($age_max)) $age_max = null;
 
 function og_title() {
-    if (!isset($_GET["area"])) return "實價登錄房價趨勢";
+    global $PARKING_MAP, $parking, $type, $age_min, $age_max;
 
-    $PARKING_MAP = [
-        "0" => "車位不拘",
-        "1" => "有車位",
-        "-1" => "無車位",
-    ];
+    if (!isset($_GET["area"])) return "實價登錄房價趨勢";
 
     $og_title = [
         $_GET["area"] . ((isset($_GET["subarea"])) ? " (" . $_GET["subarea"] . ")" : ""),
-        (isset($_GET["type"])) ? " " . $_GET["type"] : " 建築類型不拘",
-        $PARKING_MAP[$_GET["parking"] ?? 0],
-        "屋齡 " . ($_GET["age_min"] ?? "不限") . "年 ~ " . ($_GET["age_max"] ?? "不限") . "年",
+        $type ?: " 建築類型不拘",
+        $PARKING_MAP[$parking],
+        "屋齡 {$age_min}年 ~ {$age_max}年",
     ];
     $og_title = implode(" - ", $og_title);
     $og_title = str_replace("不限年", "不限", $og_title);

@@ -238,6 +238,10 @@ function update_chart_with_query() {
         document.getElementById(field).value = params[field];
     }
 
+    for (const field in DEFAULT_VALUES) {
+        params[field] = params[field] ?? DEFAULT_VALUES[field];
+    }
+
     update_subareas();
 
     document.querySelectorAll("input[name='subarea']").forEach(ele => ele.checked = false);
@@ -248,12 +252,9 @@ function update_chart_with_query() {
     }
 
     params.v = ASSET_VERSION || (new Date().getDate());
-    for (const field of ["y_right", "y_left"]) {
-        if (params.hasOwnProperty(field)) {
-            delete params[field];
-        }
-    }
 
+    delete params["y_left"];
+    delete params["y_right"];
     update_chart(params, push_history=false);
 }
 
