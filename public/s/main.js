@@ -291,40 +291,7 @@ window.addEventListener("popstate", (event) => {
     update_chart_with_query();
 });
 
-(async () => {
-    await fetch(`/build/option.json?v=${ASSET_VERSION}`)
-    .then(resp => resp.json())
-    .then(data => {
-        for (let key in data) options[key] = data[key];
 
-        const area = document.getElementById("area");
-
-        area.querySelectorAll("option").forEach(ele => ele.remove());
-
-        for (let area_name of Object.keys(data["area"])) {
-            const opt = document.createElement("option");
-            opt.textContent = area_name;
-            opt.value = area_name;
-            opt.id = `area_${area_name}`;
-            area.append(opt);
-        }
-
-        area.value = Object.keys(data["area"])[0];
-        update_subareas();
-
-        const types = document.getElementById("type");
-        for (let type of data["type"]) {
-            const opt = document.createElement("option");
-            opt.textContent = type;
-            opt.value = type;
-            types.append(opt);
-        }
-
-        if (data.dataver) document.getElementById("dataver").textContent = data.dataver;
-    });
-
-    if (window.location.search) {
-        update_chart_with_query();
-    }
-
-})();
+if (window.location.search) {
+    update_chart_with_query();
+}

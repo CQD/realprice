@@ -9,11 +9,14 @@ $PARKING_MAP = [
     "-1" => "無車位",
 ];
 
+$area = $_GET["area"] ?? null;
+$area = array_key_exists($area, $OPTION["area"]) ? $area : array_keys($OPTION["area"])[0];
+
 $parking = $_GET["parking"] ?? 0;
 $parking = ($PARKING_MAP[$parking] ?? false) ? $parking : 0;
 
-$type = $_GET["type"] ?? "";
-$type = in_array($type, $OPTION["type"]) ? $type : "";
+$type = $_GET["type"] ?? null;
+$type = in_array($type, $OPTION["type"]) ? $type : $OPTION["type"][0];
 
 $age_min = $_GET["age_min"] ?? null ?: null;
 $age_max = $_GET["age_max"] ?? null ?: null;
@@ -71,11 +74,16 @@ gtag('config', 'G-XPVFS6XXKD');
 <section id="input">
 
 <select id="area" onchange="update_subareas()">
-<option value="載入中" selected>載入中</option>
+<?php foreach($OPTION["area"] as $_area => $_subareas):?>
+<option id="area_<?=e($_area)?>" value="<?=e($_area)?>"<?=($_area == $area) ? " selected" : ""?>><?=e($_area)?></option>
+<?php endforeach; ?>
 </select>
 
 <select id="type">
 <option value="">類型不拘</option>
+<?php foreach($OPTION["type"] as $_type):?>
+<option value="<?=e($_type)?>"<?=($_type == $type) ? " selected" : ""?>><?=e($_type)?></option>
+<?php endforeach; ?>
 </select>
 
 <select id="parking"><option value="0">車位不拘</option><option value="1">有車位</option><option value="-1">無車位</option></select>
@@ -88,7 +96,14 @@ gtag('config', 'G-XPVFS6XXKD');
 
 <br>
 
-<fieldset id="subareas"></fieldset>
+<fieldset id="subareas">
+<?php foreach ($OPTION["area"][$area] as $_subarea): ?>
+<div class="checkbox-wrapper">
+<input type="checkbox" value="<?=e($_subarea)?>" name="subarea" id="subarea_<?=e($_subarea)?>">
+<label for="subarea_<?=e($_subarea)?>"><?=e($_subarea)?></label>
+</div>
+<?php endforeach;?>
+</fieldset>
 
 左 Y 軸
 <select id="y_left">
@@ -127,7 +142,7 @@ gtag('config', 'G-XPVFS6XXKD');
 </section>
 
 <footer>
-<div>資料版本：<span id="dataver">不明</span><br>
+<div>資料版本：<span id="dataver"><?=$OPTION["dataver"]?></span><br>
 程式碼：<a href="https://github.com/CQD/realprice">https://github.com/CQD/realprice</a><br>
 看的是整體統計趨勢，不能套用在單一建案。<br>
 理論上應該在 30 天內登記，但實際登記狀況可能延遲到兩三個月。<br>
@@ -137,7 +152,7 @@ gtag('config', 'G-XPVFS6XXKD');
 
 
 <script>
-const options = {};
+const options = <?=json_encode($OPTION)?>;
 ASSET_VERSION = '<?=ASSET_VERSION?>';
 
 </script>
