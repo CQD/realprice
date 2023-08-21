@@ -6,6 +6,8 @@ $map = [
     '/' => 'Index',
     '/api/option' => 'ApiOption',
     '/api/data' => 'ApiData',
+    '/sitemap.xml' => 'ApiSitemap',
+    '/sitemap' => 'ApiSitemap',
     '404' => 'FourOFour',
 ];
 

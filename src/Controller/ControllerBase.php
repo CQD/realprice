@@ -46,9 +46,10 @@ abstract class ControllerBase
 
     public function run()
     {
-        $this->logic();
+        $result = $this->logic();
         if ($this->template) {
             $file = __DIR__ . '/../../view/' . $this->template;
+            if (is_array($result)) extract($result);
             include $file;
         }
     }
