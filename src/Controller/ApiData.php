@@ -37,10 +37,16 @@ SELECT count(*) AS cnt,
        sum(price) AS price_total,
        avg(price / area) AS unit_price_avg,
        median(price / area) AS unit_price_median,
+       p25(price / area) AS unit_price_p25,
+       p75(price / area) AS unit_price_p75,
        avg(price) AS price_avg,
        median(price) AS price_median,
+       p25(price) AS price_p25,
+       p75(price) AS price_p75,
        avg(area) AS area_avg,
        median(area) AS area_median,
+       p25(area) AS area_p25,
+       p75(area) AS area_p75,
        strftime("%Y/%m", transaction_date, 'unixepoch') as ym
 FROM house_transactions
 WHERE %CONDITIONS%

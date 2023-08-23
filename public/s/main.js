@@ -1,6 +1,12 @@
 const chart_canvas = document.getElementById("chart");
 const ctx = chart_canvas.getContext("2d");
 
+function chart_msg(txt) {
+    ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText(txt, 30, 30);
+}
+
 function ym_list() {
     const ym_list = [];
 
@@ -41,6 +47,10 @@ const chart_config = {
     type: 'bar',
     data: data,
     options: {
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
         responsive: true,
         maintainAspectRatio: false,
         animation: false,
@@ -99,13 +109,12 @@ function update_chart(params, push_history=true) {
 
     const url = "/api/data?" + new URLSearchParams(params);
 
-    ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
-    ctx.font = "bold 20px sans-serif";
-    ctx.fillText("載入中...", 30, 30);
+    chart_msg("載入中...");
 
     fetch(url)
     .then(resp => resp.json())
     .then(resp => {
+        chart_msg("繪製中...");
         update_chart_with_data(resp.data, params);
 
         const footer_msg = document.getElementById("footer_msg");
@@ -161,11 +170,27 @@ function update_chart_with_data(data, params) {
     const y_left = document.getElementById("y_left").selectedOptions[0];
     const y_right = document.getElementById("y_right").selectedOptions[0];
     const f = [
-        [y_left.value,  y_left.textContent,  "#ff8012"],
-        [y_right.value, y_right.textContent, "#aaccff"],
+        [y_left.value,  y_left.textContent,  "rgba(255, 128, 18, 1)", {}],
     ];
 
-    for (const [field, field_name, color] of f) {
+    if (y_left.value.endsWith("_median")) {
+        f.push([
+            y_left.value.replaceAll("_median", "_p25"),
+            y_left.textContent.replaceAll("中位數", "25%"),
+            "rgba(255, 128, 18, 0.3)",
+            {},
+        ]);
+        f.push([
+            y_left.value.replaceAll("_median", "_p75"),
+            y_left.textContent.replaceAll("中位數", "75%"),
+            "rgba(255, 128, 18, 0.3)",
+            {},
+        ]);
+    }
+
+    f.push([y_right.value, y_right.textContent, "#aaccff", {type: "bar", yAxisID: "yr"}]);
+
+    for (const [field, field_name, color, conf] of f) {
         const values = [];
         for (const ym of ym_list()) {
             if (data[ym]) {
@@ -180,14 +205,16 @@ function update_chart_with_data(data, params) {
             data: values,
             borderColor: color,
             backgroundColor: color,
+            type: "line",
+            yAxisID: "y",
+            pointRadius: 0,
         }
+        for (let field in conf) {
+            dataset[field] = conf[field];
+        }
+
         datasets.push(dataset);
     }
-
-    datasets[0].type = "line";
-    datasets[0].yAxisID = "y";
-    datasets[1].type = "bar";
-    datasets[1].yAxisID = "yr";
 
     chart.data.datasets = datasets;
     chart.options.plugins.title.text = title_from_params(params);
@@ -294,4 +321,6 @@ window.addEventListener("popstate", (event) => {
 
 if (window.location.search) {
     update_chart_with_query();
+} else {
+    chart_msg("請選擇查詢條件...");
 }
