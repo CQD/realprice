@@ -129,6 +129,10 @@ function update_chart(params, push_history=true) {
                 footer_msg.appendChild(ele);
             }
         }
+    })
+    .catch(err => {
+        console.log(err);
+        chart_msg("載入失敗，請稍後重試 /_\\");
     });
 
     params.y_left = document.getElementById("y_left").value;
