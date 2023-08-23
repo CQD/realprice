@@ -21,27 +21,24 @@ abstract class ControllerBase
 
         // register the median function
         // https://stackoverflow.com/posts/73635970/revisions
-        $this->db->sqliteCreateAggregate(
-            // the name of the function to declare
-            'median',
-            // method called for each row
-            function($context, $row_number, $value){
-                $context[] = $value;
-                return $context;
-            },
-            // method called once all row have been iterated over
-            function($context, $row_count){
-                sort($context, SORT_NUMERIC);
-                $count = count($context);
-                $middle = floor($count/2);
-                if (($count % 2) == 0) {
-                    return ($context[$middle--] + $context[$middle])/2;
-                } else {
-                    return $context[$middle];
-                }
-            },
-            1
-        );
+        $step_func = function($context, $row_number, $value) {
+            $context[] = $value;
+            return $context;
+        };
+
+        $percentile_func = fn($p) => function ($context, $row_count) use ($p) {
+            sort($context, SORT_NUMERIC);
+            $count = count($context);
+            $middle = floor($count * $p);
+            if (($count % 2) == 0) {
+                return ($context[max($middle - 1, 0)] + $context[$middle])/2;
+            }
+            return $context[$middle];
+        };
+
+        $this->db->sqliteCreateAggregate('median', $step_func, $percentile_func(0.5), 1);
+        $this->db->sqliteCreateAggregate('p25', $step_func, $percentile_func(0.25), 1);
+        $this->db->sqliteCreateAggregate('p75', $step_func, $percentile_func(0.75), 1);
     }
 
     public function run()
