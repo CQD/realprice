@@ -103,6 +103,16 @@ EOT;
             $result[$row["ym"]] = $row;
         }
 
+        // 價格整數化
+        foreach ($result as $row) {
+            foreach ($row as $field => $value) {
+                if (false != strpos($field, "price")) {
+                    $result[$row["ym"]][$field] = (int) $value;
+                }
+            }
+        }
+
+        // 組出 debug 用的 sql
         foreach ($condition_params as $key => $value) {
             if (is_string($value)) {
                 $value = "'$value'";
