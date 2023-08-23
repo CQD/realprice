@@ -175,25 +175,8 @@ function update_chart_with_data(data, params) {
     const y_right = document.getElementById("y_right").selectedOptions[0];
     const f = [
         [y_left.value,  y_left.textContent,  "rgba(255, 128, 18, 1)", {}],
+        [y_right.value, y_right.textContent, "#aaccff", {type: "bar", yAxisID: "yr"}],
     ];
-
-    if (y_left.value.endsWith("_median")) {
-        f.push(f[0]);
-        f[0] = [
-            y_left.value.replaceAll("_median", "_p25"),
-            y_left.textContent.replaceAll("中位數", "25%"),
-            "rgba(255, 128, 18, 0.3)",
-            {},
-        ];
-        f.push([
-            y_left.value.replaceAll("_median", "_p75"),
-            y_left.textContent.replaceAll("中位數", "75%"),
-            "rgba(255, 128, 18, 0.3)",
-            {},
-        ]);
-    }
-
-    f.push([y_right.value, y_right.textContent, "#aaccff", {type: "bar", yAxisID: "yr"}]);
 
     for (const [field, field_name, color, conf] of f) {
         const values = [];
