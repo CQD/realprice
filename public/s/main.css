@@ -34,12 +34,18 @@ section#input{
     gap:0.4em;
 }
 
+#age_max, #age_min{
+    width:6em;
+}
+
 #subareas{
     width:100%;
     display:flex;
     flex-wrap:wrap;
     align-items:center;
     gap:0.6em;
+    border: 1px solid #aaa;
+    border-radius: 5px;;
 }
 
 #chart{

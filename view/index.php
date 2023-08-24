@@ -87,13 +87,9 @@ gtag('config', 'G-XPVFS6XXKD');
 </select>
 
 <select id="parking"><option value="0">車位不拘</option><option value="1">有車位</option><option value="-1">無車位</option></select>
-
-<span>
-<input id="age_min" type="number" placeholder="屋齡下限" size="10"></input>
- ~
-<input id="age_max" type="number" placeholder="屋齡上限" size="10"></input>
-</span>
-
+&nbsp;
+<input id="age_min" type="number" placeholder="屋齡下限"></input>
+<input id="age_max" type="number" placeholder="屋齡上限"></input>
 <br>
 
 <fieldset id="subareas">
