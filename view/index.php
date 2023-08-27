@@ -103,10 +103,12 @@ gtag('config', 'G-XPVFS6XXKD');
 
 左 Y 軸
 <select id="y_left">
-<option value="unit_price_median">中位數單價</option>
+<option value="unit_price_median">中位數單價(計入車位)</option>
+<option value="no_parking_unit_price_median">中位數單價(不計車位)</option>
 <option value="price_median">中位數房價</option>
 <option value="area_median">中位數坪數</option>
-<option value="unit_price_avg">平均單價</option>
+<option value="unit_price_avg">平均單價(計入車位)</option>
+<option value="no_parking_unit_price_avg">平均單價(不計車位)</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>
 <option value="cnt">總交易筆數</option>
@@ -117,10 +119,12 @@ gtag('config', 'G-XPVFS6XXKD');
 
 右 Y 軸
 <select id="y_right">
-<option value="unit_price_median">中位數單價</option>
+<option value="unit_price_median">中位數單價(計入車位)</option>
+<option value="no_parking_unit_price_median">中位數單價(不計車位)</option>
 <option value="price_median">中位數房價</option>
 <option value="area_median">中位數坪數</option>
-<option value="unit_price_avg">平均單價</option>
+<option value="unit_price_avg">平均單價(計入車位)</option>
+<option value="no_parking_unit_price_avg">平均單價(不計車位)</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>
 <option value="cnt" selected>總交易筆數</option>
@@ -142,7 +146,6 @@ gtag('config', 'G-XPVFS6XXKD');
 程式碼：<a href="https://github.com/CQD/realprice">https://github.com/CQD/realprice</a><br>
 看的是整體統計趨勢，不能套用在單一建案。<br>
 理論上應該在 30 天內登記，但實際登記狀況可能延遲到兩三個月。<br>
-平均/中位數統計目前未排除車位。</div>
 <div id="footer_msg"></div>
 </footer>
 

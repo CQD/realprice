@@ -32,22 +32,6 @@ class ApiData extends ControllerBase
         array $ages,
 
     ) {
-        $sql = <<<EOT
-SELECT count(*) AS cnt,
-       sum(price) AS price_total,
-       avg(price / area) AS unit_price_avg,
-       median(price / area) AS unit_price_median,
-       avg(price) AS price_avg,
-       median(price) AS price_median,
-       avg(area) AS area_avg,
-       median(area) AS area_median,
-       strftime("%Y/%m", transaction_date, 'unixepoch') as ym
-FROM house_transactions
-WHERE %CONDITIONS%
-GROUP BY ym
-ORDER BY ym ASC
-EOT;
-
         $start_time = strtotime("2012-08-01") - 10;
         $end_time = time();
 
@@ -87,6 +71,47 @@ EOT;
             $conditions[] = "district in (" . implode(",", $marks) . ")";
         }
 
+        $sql = <<<EOT
+WITH parking_unit_prices AS (
+    SELECT
+        strftime("%Y/%m", transaction_date, 'unixepoch') as ym,
+        parking_unit_price(parking_area, parking_price, area, price) AS parking_unit_price
+    FROM house_transactions
+    WHERE %CONDITIONS%
+    GROUP BY ym
+),
+
+transactions AS (
+    SELECT
+        price, area, transaction_date, parking_area,
+        CASE
+            WHEN parking_price THEN parking_price
+            ELSE p.parking_unit_price * parking_area
+        END AS parking_price,
+        strftime("%Y/%m", transaction_date, 'unixepoch') AS ym
+    FROM house_transactions
+    LEFT JOIN parking_unit_prices AS p on strftime("%Y/%m", transaction_date, 'unixepoch') = p.ym
+    WHERE %CONDITIONS%
+    order by transaction_date asc
+)
+
+SELECT count(*) AS cnt,
+    sum(price) AS price_total,
+    avg(price / area) AS unit_price_avg,
+    avg((price - parking_price) / (area - parking_area)) AS no_parking_unit_price_avg,
+    median(price / area) AS unit_price_median,
+    median((price - parking_price) / (area - parking_area)) AS no_parking_unit_price_median,
+    avg(price) AS price_avg,
+    median(price) AS price_median,
+    avg(area) AS area_avg,
+    median(area) AS area_median,
+    ym
+FROM transactions
+GROUP BY ym
+ORDER BY ym ASC
+
+
+EOT;
         $sql = str_replace('%CONDITIONS%', implode(" AND ", $conditions), $sql);
 
         $result = [];

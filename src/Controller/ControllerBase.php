@@ -19,7 +19,7 @@ abstract class ControllerBase
         $data_file = __DIR__  . '/../../build/transactions.sqlite3';
         $this->db = new \PDO("sqlite:{$data_file}");
 
-        // register the median function
+        // 註冊中位數函數
         // https://stackoverflow.com/posts/73635970/revisions
         $step_func = function($context, $row_number, $value) {
             $context[] = $value;
@@ -39,6 +39,42 @@ abstract class ControllerBase
         $this->db->sqliteCreateAggregate('median', $step_func, $percentile_func(0.5), 1);
         $this->db->sqliteCreateAggregate('p25', $step_func, $percentile_func(0.25), 1);
         $this->db->sqliteCreateAggregate('p75', $step_func, $percentile_func(0.75), 1);
+
+        // 註冊車位價格計算函數
+        $this->db->sqliteCreateAggregate(
+            'parking_unit_price',
+            // step function
+            function($context, $row_number, $parking_area, $parking_price, $area, $price){
+                $context = $context ? $context : [
+                    "parking_total_area" => 0,
+                    "parking_total_price" => 0,
+                    "total_area" => 0,
+                    "total_price" => 0,
+                ];
+
+                $context["parking_total_price"] += $parking_price;
+                $context["parking_total_area"] += $parking_area;
+                $context["total_price"] += $price;
+                $context["total_area"] += $area;
+                return $context;
+            },
+
+            // final function
+            function ($context, $row_count) {
+                if (!$context) return 0;
+                if ($context["parking_total_area"] && $context["parking_total_price"]) {
+                    return $context["parking_total_price"] / $context["parking_total_area"];
+                }
+                if ($context["total_area"]) {
+                    return $context["total_price"] / $context["total_area"];
+                }
+
+                return 0;
+            },
+
+            // 參數數量
+            4,
+        );
     }
 
     public function run()
