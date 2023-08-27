@@ -60,7 +60,8 @@ function process($countyId, $countyName)
             .["建築完成年月"],
             .["建物移轉總面積平方公尺"],
             .["總價元"],
-            .["車位移轉總面積平方公尺"]
+            .["車位移轉總面積平方公尺"],
+            .["車位總價元"]
         ]\' -Mc | grep "住宅大樓\|華廈\|透天\|公寓\|套房"',
         __DIR__ . '/../data',
         $countyId
@@ -72,8 +73,8 @@ function process($countyId, $countyName)
     $db->exec('BEGIN TRANSACTION');
     $stmt = $db->prepare(
         "INSERT INTO house_transactions "
-        ."(county, district, transaction_date, type, build_date, area, price, parking_area)"
-        ."VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
+        ."(county, district, transaction_date, type, build_date, area, price, parking_area, parking_price)"
+        ."VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
     while ($line = fgets($fp)) {
         $row++;
@@ -85,6 +86,7 @@ function process($countyId, $countyName)
             $area,
             $price,
             $parkingArea,
+            $parkingPrice,
         ] = json_decode($line, true);
 
         if (!$dist) {
@@ -127,6 +129,7 @@ function process($countyId, $countyName)
             $area * 0.3025,
             $price,
             $parkingArea * 0.3025,
+            $parkingPrice,
         ]);
         $insert++;
     }

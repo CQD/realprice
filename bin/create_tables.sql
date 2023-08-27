@@ -9,5 +9,6 @@ CREATE TABLE house_transactions (
     build_date INTEGER,
     area REAL,
     price INTEGER,
-    parking_area REAL
+    parking_area REAL,
+    parking_price INTEGER
 );
