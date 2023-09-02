@@ -70,7 +70,7 @@ gtag('js', new Date());
 gtag('config', 'G-XPVFS6XXKD');
 </script>
 
-<section><h1>實價登錄房價趨勢</h1><small id="pagetitle"></small></section>
+<header><div class="wrapper"><h1>實價登錄房價趨勢</h1><small id="pagetitle"></small></div></header>
 <section id="input">
 
 <select id="area" onchange="update_subareas()">

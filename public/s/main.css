@@ -1,16 +1,37 @@
 :root, html,body{
+    --max-width: 1100px;
+    --main-color:#f25500;
+    --bg-color:#f3f3f3;
     font-family: sans-serif;
     padding:0;
     margin:0;
     font-size:15px;
     color:#444;
     line-height:1.8;
+    background-color: var(--bg-color);
 }
-small{opacity:0.75;}
+small{opacity:0.9;}
 
-body{
+select,button,#age_max,#age_min{
+    appearance: none;
+    --webket-appearance: none;
+    background-color: white;
     padding:0 5px;
+    border : 1px solid #aaa;
+    border-radius: 0.5em;
+    color:#333;
+    font-size:14px;
 }
+button{
+    cursor:pointer;
+    padding: 5px 10px;
+    background-color: var(--main-color);
+    color:white;
+    border:0;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
 h1{
     margin:0;
     padding:0;
@@ -18,17 +39,27 @@ h1{
     display: inline-block;
 }
 
+.wrapper{
+    max-width:var(--max-width);
+    margin:0 auto;
+}
+
+header {
+    background-color: var(--main-color);
+    color: white;
+    padding:0 10px;
+    font-size: 18px;
+    border-bottom:6px dotted var(--bg-color);
+}
 section{
-    max-width:1100px;
+    max-width:var(--max-width);
     margin:10px auto;
     border-radius:3px;
     padding: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2),  0 2px 5px rgba(0, 0, 0, 0.1);
     position:relative;
 }
 section#input{
     margin-top:0;
-    border-radius:0 0 3px 3px;
     display:flex;
     flex-wrap:wrap;
     gap:0.4em;
@@ -43,7 +74,7 @@ section#input{
     display:flex;
     flex-wrap:wrap;
     align-items:center;
-    gap:0.6em;
+    gap:0.3em;
     border: 1px solid #aaa;
     border-radius: 5px;;
 }
@@ -64,6 +95,11 @@ footer{
 }
 
 @media (max-width: 640px){
+    h1{
+        display: block;
+        padding: 5px 0 0;
+        line-height:1.1;
+    }
     #subareas{
         gap:2px;
     }
