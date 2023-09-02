@@ -24,7 +24,7 @@ vendor/autoload.php: composer.json
 
 option: public/build/option.json build/option.php
 
-public/build/option.json: build/transactions.sqlite3 bin/build_option.php
+public/build/option.json: build/transactions.sqlite3 bin/build_option.php src/Controller/ApiOption.php
 	 bin/build_option.php > $@
 
 build/option.php: public/build/option.json
