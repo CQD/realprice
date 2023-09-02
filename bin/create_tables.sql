@@ -27,7 +27,6 @@ CREATE TABLE districts (
 
 DROP TABLE IF EXISTS house_transactions;
 CREATE TABLE house_transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
     county_id INTEGER,
     district_id INTEGER,
     transaction_date INTEGER,
