@@ -125,6 +125,8 @@ function update_chart(params, push_history=true) {
             if (key == "data") continue;
             console.log(key, resp[key])
         }
+
+        document.getElementById("y_left").scrollIntoView({behavior: 'smooth'});
     })
     .catch(err => {
         console.log(err);
