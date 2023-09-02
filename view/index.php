@@ -35,7 +35,7 @@ function og_title() {
         "屋齡 {$age_min}年 ~ {$age_max}年",
     ];
     $og_title = implode(" - ", $og_title);
-    $og_title = str_replace("不限年", "不限", $og_title);
+    $og_title = str_replace(" 年", " 不限", $og_title);
     $og_title = str_replace(" 不限 ~ 不限", "不限", $og_title);
 
     return $og_title;
