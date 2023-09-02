@@ -49,6 +49,7 @@ $og_title = og_title();
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=1">
 <link rel="icon" type="image/png" href="/favicon.png" >
 <link rel="apple-touch-icon" href="/favicon.png">
+<meta name="theme-color" content="#f25500">
 <link type="text/css" rel="stylesheet" href="/s/main.css?v=<?=ASSET_VERSION?>">
 <link rel="index" href="https://realprice.cqd.tw/" title="實價登錄房價趨勢">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js"></script>
