@@ -44,18 +44,7 @@ function asset_ver() {
         return date("YmdHis");
     }
 
-    $base = "";
-    foreach (["GAE_VERSION", "GAE_INSTANCE"] as $key) {
-        if (defined($key)) {
-            $base = constant($key);
-        }
-        if ($base) {
-            break;
-        }
-    }
-
-    $base = $base ?? date("Ymd");
+    $base = getenv("GAE_VERSION") ?: getenv("GAE_INSTANCE") ?: date("Ymd");
     $hash = md5($base);
-
     return substr($hash, 2, 12);
 }
