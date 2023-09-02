@@ -140,7 +140,7 @@ gtag('config', 'G-XPVFS6XXKD');
 
 &nbsp;&nbsp;
 
-<button onclick="update_chart()">產製圖表</button>
+<button id="gen_btn" onclick="click_gen_btn()">產製圖表</button>
 
 </section>
 

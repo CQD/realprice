@@ -1,6 +1,7 @@
 const chart_canvas = document.getElementById("chart");
 const ctx = chart_canvas.getContext("2d");
 const tooltipEnabled = (window.screen.width > 640);
+const gen_btn = document.getElementById("gen_btn");
 
 function chart_msg(txt) {
     ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
@@ -99,6 +100,7 @@ const chart_config = {
 const chart = new Chart(chart_canvas, chart_config);
 
 function update_chart(params, push_history=true) {
+    console.log("update_chart", params, push_history)
     params = params || chart_params();
 
     // 依照 key 排序，確保 URL 參數的順序一致，以提高 cache 命中率
@@ -131,6 +133,8 @@ function update_chart(params, push_history=true) {
     .catch(err => {
         console.log(err);
         chart_msg("載入失敗，請稍後重試 /_\\");
+    }).finally(() => {
+        gen_btn.classList.remove("disabled");
     });
 
     params.y_left = document.getElementById("y_left").value;
@@ -143,7 +147,12 @@ function update_chart(params, push_history=true) {
     if (push_history) {
         window.history.pushState(params, null, "?" + new URLSearchParams(params));
     }
+}
 
+function click_gen_btn() {
+    if (gen_btn.classList.contains("disabled")) return;
+    gen_btn.classList.add("disabled");
+    update_chart();
 }
 
 function title_from_params(params) {

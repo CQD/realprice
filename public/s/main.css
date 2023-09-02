@@ -39,6 +39,10 @@ button{
     font-weight: bold;
     transition: all 0.2s ease-in-out;
 }
+button.disabled{
+    background-color: #aaa;
+    cursor:default;
+}
 
 h1{
     margin:0;
