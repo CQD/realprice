@@ -121,9 +121,6 @@ function update_chart(params, push_history=true) {
         chart_msg("繪製中...");
         update_chart_with_data(resp.data, params);
 
-        const footer_msg = document.getElementById("footer_msg");
-        footer_msg.innerHTML = "";
-
         for (const key in resp) {
             if (key == "data") continue;
             console.log(key, resp[key])

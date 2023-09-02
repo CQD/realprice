@@ -153,7 +153,6 @@ gtag('config', 'G-XPVFS6XXKD');
 程式碼：<a href="https://github.com/CQD/realprice">https://github.com/CQD/realprice</a><br>
 看的是整體統計趨勢，不能套用在單一建案。<br>
 理論上應該在 30 天內登記，但實際登記狀況可能延遲到兩三個月。<br>
-<div id="footer_msg"></div>
 </footer>
 
 

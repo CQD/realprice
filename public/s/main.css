@@ -98,9 +98,6 @@ footer{
     color:#777;
     padding-bottom: 2em;
 }
-#footer_msg{
-    font-family:monospace;
-}
 
 @media (max-width: 640px){
     h1{
