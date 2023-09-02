@@ -155,11 +155,13 @@ gtag('config', 'G-XPVFS6XXKD');
 理論上應該在 30 天內登記，但實際登記狀況可能延遲到兩三個月。<br>
 
 <p>
-<a name="作者網頁" href="https://cqd.tw"><img alt="作者" src="https://cqd.tw/avatar.png" loading="lazy"></a>
+<a name="作者網頁" title="作者網頁" href="https://cqd.tw"><img alt="作者" src="https://cqd.tw/avatar.png" loading="lazy"></a>
 &nbsp;
-<a name="作者噗浪" href="https://plurk.com/CQD"><img alt="噗浪" src="https://cqd.tw/plurk.svg" loading="lazy"></a>
+<a name="作者噗浪" title="作者噗浪" href="https://plurk.com/CQD"><img alt="噗浪" src="https://cqd.tw/plurk.svg" loading="lazy"></a>
 &nbsp;
-<a name="完整程式碼" href="https://github.com/CQD/realprice/"><img alt="Github" src="https://cqd.tw/github.svg" loading="lazy"></a>
+<a name="完整程式碼" title="完整程式碼" href="https://github.com/CQD/realprice/"><img alt="Github" src="https://cqd.tw/github.svg" loading="lazy"></a>
+&nbsp;
+<a name="水庫水情與歷年統計" title="水庫水情與歷年統計" href="https://reservoir.cqd.tw/"><img alt="水庫水情與歷年統計" src="https://reservoir.cqd.tw/favicon.png" loading="lazy"></a>
 </p>
 
 </div>
