@@ -128,7 +128,9 @@ function update_chart(params, push_history=true) {
             console.log(key, resp[key])
         }
 
-        document.getElementById("y_left").scrollIntoView({behavior: 'smooth'});
+        if (push_history) {
+            document.getElementById("y_left").scrollIntoView({behavior: 'smooth'});
+        }
     })
     .catch(err => {
         console.log(err);
