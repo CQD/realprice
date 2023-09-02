@@ -1,5 +1,6 @@
 const chart_canvas = document.getElementById("chart");
 const ctx = chart_canvas.getContext("2d");
+const tooltipEnabled = (window.screen.width > 640);
 
 function chart_msg(txt) {
     ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
@@ -61,7 +62,10 @@ const chart_config = {
             title: {
                 display: true,
                 text: '',
-            }
+            },
+            tooltip: {
+                enabled: tooltipEnabled,
+            },
         },
         scales: {
             y: {
