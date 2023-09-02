@@ -45,7 +45,7 @@ function asset_ver() {
     }
 
     $base = "";
-    foreach (["GAE_DEPLOYMENT_ID", "GAE_VERSION", "GAE_INSTANCE"] as $key) {
+    foreach (["GAE_VERSION", "GAE_INSTANCE"] as $key) {
         if (defined($key)) {
             $base = constant($key);
         }
