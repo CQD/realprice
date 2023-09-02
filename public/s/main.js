@@ -122,12 +122,7 @@ function update_chart(params, push_history=true) {
 
         for (const key in resp) {
             if (key == "data") continue;
-            footer_msg.appendChild(document.createElement("hr"));
-            for (const txt of [key, resp[key]]) {
-                const ele = document.createElement("div");
-                ele.textContent = txt;
-                footer_msg.appendChild(ele);
-            }
+            console.log(key, resp[key])
         }
     })
     .catch(err => {
