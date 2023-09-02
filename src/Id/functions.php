@@ -53,3 +53,14 @@ function countyMap(): array
 {
     return ID::$counties;
 }
+
+function typeIds(): array
+{
+    return [
+        "住宅大樓" => 0,
+        "華廈" => 1,
+        "透天厝" => 2,
+        "公寓" => 3,
+        "套房" => 4,
+    ];
+}

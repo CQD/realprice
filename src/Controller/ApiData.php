@@ -34,6 +34,7 @@ class ApiData extends ControllerBase
     ) {
         $start_time = strtotime("2012-08-01") - 10;
         $end_time = time();
+        $options = require __DIR__ . "/../../build/option.php";
 
         $conditions = [
             "(transaction_date - build_date)/86400.0/365.0 BETWEEN CAST(:agemin AS number) AND CAST(:agemax AS number)",
@@ -48,27 +49,39 @@ class ApiData extends ControllerBase
         if ($parking > 0) $conditions[] = "parking_area > 0";
         elseif ($parking < 0) $conditions[] = "parking_area = 0";
 
-        if ($type) {
-            $conditions[] = "type = :type";
-            $condition_params["type"] = $type;
+        if ($type && isset($options["type_ids"][$type])) {
+            $conditions[] = "type_id = :type_id";
+            $condition_params["type_id"] = $options["type_ids"][$type];
         }
 
-        if ($counties) {
+        $counties = $counties ?: [];
+        $county_ids = array_map(fn($county) => $options["county_ids"][$county] ?? -1, $counties);
+        $county_ids = array_filter($county_ids, fn($id) => is_numeric($id) && $id >= 0);
+        if ($county_ids) {
             $marks = [];
-            foreach ($counties as $i => $county) {
-                $condition_params["county$i"] = $county;
-                $marks[] = ":county$i";
+            foreach ($county_ids as $i => $county_id) {
+                $condition_params["county_id$i"] = $county_id;
+                $marks[] = ":county_id$i";
             }
-            $conditions[] = "county in (" . implode(",", $marks) . ")";
+            $conditions[] = "h.county_id in (" . implode(",", $marks) . ")";
         }
 
-        if ($districts) {
-            $marks = [];
-            foreach ($districts as $i => $district) {
-                $condition_params["district$i"] = $district;
-                $marks[] = ":district$i";
+        $district_ids = [];
+        foreach ($districts ?: [] as $district) {
+            foreach ($options["district_ids"] as $county_id => $district_map) {
+                if ($counties && !in_array($county_id, $county_ids)) continue;
+                $district_ids[] = $district_map[$district] ?? null;
             }
-            $conditions[] = "district in (" . implode(",", $marks) . ")";
+        }
+        $district_ids = array_filter($district_ids);
+
+        if ($district_ids) {
+            $marks = [];
+            foreach ($district_ids as $i => $district_id) {
+                $condition_params["district_id$i"] = $district_id;
+                $marks[] = ":district_id$i";
+            }
+            $conditions[] = "district_id in (" . implode(",", $marks) . ")";
         }
 
         $sql = <<<EOT
@@ -76,7 +89,7 @@ WITH parking_unit_prices AS (
     SELECT
         strftime("%Y/%m", transaction_date, 'unixepoch') as ym,
         parking_unit_price(parking_area, parking_price, area, price) AS parking_unit_price
-    FROM house_transactions
+    FROM house_transactions AS h
     WHERE %CONDITIONS%
     GROUP BY ym
 ),
@@ -84,15 +97,20 @@ WITH parking_unit_prices AS (
 transactions AS (
     SELECT
         price, area, transaction_date, parking_area,
+        counties.name as county,
+        districts.name as district,
+        types.name as type,
         CASE
             WHEN parking_price THEN parking_price
             ELSE p.parking_unit_price * parking_area
         END AS parking_price,
         strftime("%Y/%m", transaction_date, 'unixepoch') AS ym
-    FROM house_transactions
+    FROM house_transactions AS h
     LEFT JOIN parking_unit_prices AS p on strftime("%Y/%m", transaction_date, 'unixepoch') = p.ym
+    LEFT JOIN counties ON h.county_id = counties.id
+    LEFT JOIN districts ON h.district_id = districts.id
+    LEFT JOIN types ON h.type_id = types.id
     WHERE %CONDITIONS%
-    order by transaction_date asc
 )
 
 SELECT count(*) AS cnt,
@@ -109,8 +127,6 @@ SELECT count(*) AS cnt,
 FROM transactions
 GROUP BY ym
 ORDER BY ym ASC
-
-
 EOT;
         $sql = str_replace('%CONDITIONS%', implode(" AND ", $conditions), $sql);
 
@@ -119,6 +135,7 @@ EOT;
 
         $stmt->execute($condition_params);
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            // XXX echo json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
             $result[$row["ym"]] = $row;
         }
 

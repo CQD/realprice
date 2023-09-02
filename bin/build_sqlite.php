@@ -2,6 +2,7 @@
 <?php
 
 use function Q\RealPrice\Id\countyMap;
+use function Q\RealPrice\Id\typeIds;
 
 require __DIR__ . "/../vendor/autoload.php";
 
@@ -49,6 +50,7 @@ if (__FILE__ === realpath($_SERVER['SCRIPT_NAME'])) {
 function process($countyId, $countyName)
 {
     global $db;
+    $district_ids = [];
 
     say("==== 處理 {$countyName} ===");
 
@@ -67,17 +69,27 @@ function process($countyId, $countyName)
         $countyId
     );
 
-    $row = 0;
-    $insert = 0;
+    $type_ids = typeIds();
+
+    $row_cnt = 0;
+    $insert_cnt = 0;
     $fp = popen($cmd, 'r');
     $db->exec('BEGIN TRANSACTION');
+    $county_stmt = $db->prepare("INSERT INTO counties (name) VALUES(?)");
+    $county_stmt->execute([$countyName]);
+
+    $county_id = 0;
+    foreach ($db->query("SELECT last_insert_rowid() AS last_id", PDO::FETCH_ASSOC) as $row) {
+        $county_id = $row['last_id'];
+    }
+
     $stmt = $db->prepare(
         "INSERT INTO house_transactions "
-        ."(county, district, transaction_date, type, build_date, area, price, parking_area, parking_price)"
+        ."(county_id, district_id, transaction_date, type_id, build_date, area, price, parking_area, parking_price)"
         ."VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
     while ($line = fgets($fp)) {
-        $row++;
+        $row_cnt++;
         [
             $dist,
             $transactionDate,
@@ -120,22 +132,34 @@ function process($countyId, $countyName)
             $type = mb_substr($type, 0, $pos); # type 拔掉 ( 之後的東西
         }
 
+        if (!($district_ids[$dist] ?? false)) {
+            $dist_stmt = $db->prepare("INSERT INTO districts (county_id, name) VALUES(?, ?)");
+            $dist_stmt->execute([$county_id, $dist]);
+
+            $dist_id = 0;
+            foreach ($db->query("SELECT last_insert_rowid() AS last_id", PDO::FETCH_ASSOC) as $row) {
+                $dist_id = $row['last_id'];
+            }
+
+            $district_ids[$dist] = $dist_id;
+        }
+
         $stmt->execute([
-            $countyName,
-            $dist,
+            $county_id,
+            $district_ids[$dist],
             $transactionDate,
-            $type,
+            $type_ids[$type],
             $buildingDate,
             $area * 0.3025,
             $price,
             $parkingArea * 0.3025,
             $parkingPrice,
         ]);
-        $insert++;
+        $insert_cnt++;
     }
 
-    $dropped = $row - $insert;
-    say("已讀取 {$row} 筆資料，寫入 {$insert} 筆資料，拋棄 {$dropped} 筆資料");
+    $drop_cnt = $row_cnt - $insert_cnt;
+    say("已讀取 {$row_cnt} 筆資料，寫入 {$insert_cnt} 筆資料，拋棄 {$drop_cnt} 筆資料");
     $db->exec('COMMIT TRANSACTION');
     say("Transaction comitted");
 

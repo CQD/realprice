@@ -3,6 +3,7 @@
 namespace Q\RealPrice\Controller;
 
 use PDO;
+use function Q\RealPrice\Id\typeIds;
 
 class ApiOption extends ControllerBase
 {
@@ -15,15 +16,18 @@ class ApiOption extends ControllerBase
             'area' => $this->getArea(),
             'type' => $this->getType(),
             'dataver' => $this->getDataver(),
+            'county_ids' => $this->getCountyIds(),
+            'district_ids' => $this->getDistrictIds(),
+            'type_ids' => typeIds(),
         ]);
     }
 
     protected function getType() {
-        $sql = "SELECT type FROM house_transactions GROUP BY type ORDER BY count(*) DESC";
+        $sql = "SELECT name FROM types";
 
         $types = [];
         foreach ($this->db->query($sql, PDO::FETCH_ASSOC) as $row) {
-            $types[] = $row["type"];
+            $types[] = $row["name"];
         }
         return $types;
     }
@@ -32,8 +36,10 @@ class ApiOption extends ControllerBase
         $twoYearAgo = date("Ymd", strtotime("2 year ago"));
 
         $sql = <<<EOT
-SELECT county, district
-FROM house_transactions
+SELECT c.name as county, d.name as district
+FROM house_transactions AS h
+JOIN districts AS d ON d.id = h.district_id
+JOIN counties AS c ON c.id = d.county_id
 GROUP BY county, district
 ORDER BY count(IIF(transaction_date > {$twoYearAgo}, 1, NULL)) DESC
 EOT;
@@ -55,5 +61,27 @@ EOT;
 
         if (!$dirs) return "不明";
         return max($dirs);
+    }
+
+    protected function getCountyIds() {
+        $sql = "SELECT id, name FROM counties";
+
+        $result = [];
+        foreach ($this->db->query($sql, PDO::FETCH_ASSOC) as $row) {
+            $result[$row["name"]] = $row["id"];
+        }
+        return $result;
+    }
+
+    protected function getDistrictIds() {
+        $sql = "SELECT id, county_id, name FROM districts";
+
+        $result = [];
+        foreach ($this->db->query($sql, PDO::FETCH_ASSOC) as $row) {
+            $county_id = $row["county_id"];
+            $result[$county_id] = $result[$county_id] ?? [];
+            $result[$county_id][$row["name"]] = $row["id"];
+        }
+        return $result;
     }
 }
