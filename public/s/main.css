@@ -16,12 +16,20 @@ select,button,#age_max,#age_min{
     appearance: none;
     --webket-appearance: none;
     background-color: white;
-    padding:0 5px;
-    border : 1px solid #aaa;
+    padding:0 10px;
+    border : 1px solid #cdd;
     border-radius: 0.5em;
-    color:#333;
+    color:#444;
     font-size:14px;
 }
+select{
+    padding-right: 31px;
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23444' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
 button{
     cursor:pointer;
     padding: 5px 10px;
