@@ -101,6 +101,7 @@ gtag('config', 'G-XPVFS6XXKD');
 <?php endforeach;?>
 </fieldset>
 
+<div class="y_select_group">
 左 Y 軸
 <select id="y_left">
 <option value="unit_price_median">中位數單價(計入車位)</option>
@@ -114,9 +115,11 @@ gtag('config', 'G-XPVFS6XXKD');
 <option value="cnt">總交易筆數</option>
 <option value="price_total">總交易額</option>
 </select>
+</div>
 
 &nbsp;&nbsp;
 
+<div class="y_select_group">
 右 Y 軸
 <select id="y_right">
 <option value="unit_price_median">中位數單價(計入車位)</option>
@@ -130,6 +133,7 @@ gtag('config', 'G-XPVFS6XXKD');
 <option value="cnt" selected>總交易筆數</option>
 <option value="price_total">總交易額</option>
 </select>
+</div>
 
 &nbsp;&nbsp;
 

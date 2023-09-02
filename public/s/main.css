@@ -111,6 +111,9 @@ footer{
     #subareas{
         gap:2px;
     }
+    .y_select_group{
+        min-width:90%;
+    }
     #chart_wrapper {
         height: 70vh;
     }
