@@ -149,10 +149,20 @@ gtag('config', 'G-XPVFS6XXKD');
 </section>
 
 <footer>
-<div>資料版本：<span id="dataver"><?=$OPTION["dataver"]?></span><br>
-程式碼：<a href="https://github.com/CQD/realprice">https://github.com/CQD/realprice</a><br>
+<div class="wrapper">
+資料版本：<span id="dataver"><?=$OPTION["dataver"]?></span><br>
 看的是整體統計趨勢，不能套用在單一建案。<br>
 理論上應該在 30 天內登記，但實際登記狀況可能延遲到兩三個月。<br>
+
+<p>
+<a name="作者網頁" href="https://cqd.tw"><img alt="作者" src="https://cqd.tw/avatar.png" loading="lazy"></a>
+&nbsp;
+<a name="作者噗浪" href="https://plurk.com/CQD"><img alt="噗浪" src="https://cqd.tw/plurk.svg" loading="lazy"></a>
+&nbsp;
+<a name="完整程式碼" href="https://github.com/CQD/realprice/"><img alt="Github" src="https://cqd.tw/github.svg" loading="lazy"></a>
+</p>
+
+</div>
 </footer>
 
 
