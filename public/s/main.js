@@ -128,7 +128,10 @@ function update_chart(params, push_history=true) {
             console.log(key, resp[key])
         }
 
-        if (push_history) {
+        // 如果圖太下面，就捲動到能看清圖的位置
+        // 但連結進來不捲動
+        const chart_top = chart_canvas.getBoundingClientRect().top;
+        if (push_history && chart_top > window.innerHeight * 0.5) {
             document.getElementById("y_left").scrollIntoView({behavior: 'smooth'});
         }
     })
