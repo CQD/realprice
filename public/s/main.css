@@ -121,6 +121,64 @@ footer img {
     border-radius: 100%;
 }
 
+#loading{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background-color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin: 0 auto;
+    padding:45vh 0 0;
+    color:#789;
+    font-size: 20px;
+    min-height: 30vh;
+    animation: appear 0.4s;
+    display: none;
+}
+#loading.show{
+    display: block;
+}
+@keyframes appear {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+}
+
+.lds{
+    display: block;
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+}
+.lds div {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    margin: -6px;
+    border-radius: 50%;
+    background: var(--main-color);
+    top:0;
+    left:50%;
+    animation: lds-ball 2s linear infinite;
+}
+.lds div:nth-child(2){animation-delay: -0.5s;}
+.lds div:nth-child(3){animation-delay: -1.0s;}
+.lds div:nth-child(4){animation-delay: -1.5s;}
+@keyframes lds-ball {
+    0%{
+        transform:  rotate(-270deg) translateX(30px);
+    }
+    100% {
+        transform:  rotate(90deg) translateX(30px);
+    }
+}
+
 @media (max-width: 640px){
     h1{
         display: block;

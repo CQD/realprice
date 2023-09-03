@@ -1,12 +1,21 @@
 const chart_canvas = document.getElementById("chart");
 const ctx = chart_canvas.getContext("2d");
 const tooltipEnabled = (window.screen.width > 640);
+
 const gen_btn = document.getElementById("gen_btn");
+const loading_spinner = document.getElementById("loading");
 
 function chart_msg(txt) {
     ctx.clearRect(0, 0, chart_canvas.width, chart_canvas.height);
     ctx.font = "bold 20px sans-serif";
     ctx.fillText(txt, 30, 30);
+}
+
+function show_loading() {
+    loading_spinner.classList.add("show");
+}
+function hide_loading() {
+    loading_spinner.classList.remove("show");
 }
 
 function ym_list() {
@@ -115,6 +124,7 @@ function update_chart(params, push_history=true) {
 
     const url = "/api/data?" + new URLSearchParams(params);
 
+    show_loading();
     chart_msg("載入中...");
 
     fetch(url)
@@ -140,6 +150,7 @@ function update_chart(params, push_history=true) {
         chart_msg("載入失敗，請稍後重試 /_\\");
     }).finally(() => {
         gen_btn.classList.remove("disabled");
+        hide_loading();
     });
 
     params.y_left = document.getElementById("y_left").value;

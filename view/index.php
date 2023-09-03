@@ -167,6 +167,9 @@ gtag('config', 'G-XPVFS6XXKD');
 
 </div>
 </footer>
+<div id="loading">
+<div class="lds"><div></div><div></div><div></div><div></div></div>
+</div>
 
 
 <script>
