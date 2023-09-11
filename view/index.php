@@ -108,14 +108,16 @@ gtag('config', 'G-XPVFS6XXKD');
 <div class="y_select_group">
 左 Y 軸
 <select id="y_left">
+<option value="no_parking_unit_price_median">中位數單價(排除車位)</option>
 <option value="unit_price_median">中位數單價(計入車位)</option>
-<option value="no_parking_unit_price_median">中位數單價(不計車位)</option>
 <option value="price_median">中位數房價</option>
 <option value="area_median">中位數坪數</option>
+<!--
 <option value="unit_price_avg">平均單價(計入車位)</option>
-<option value="no_parking_unit_price_avg">平均單價(不計車位)</option>
+<option value="no_parking_unit_price_avg">平均單價(排除車位)</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>
+-->
 <option value="cnt">總交易筆數</option>
 <option value="price_total">總交易額</option>
 </select>
@@ -126,14 +128,16 @@ gtag('config', 'G-XPVFS6XXKD');
 <div class="y_select_group">
 右 Y 軸
 <select id="y_right">
+<option value="no_parking_unit_price_median">中位數單價(排除車位)</option>
 <option value="unit_price_median">中位數單價(計入車位)</option>
-<option value="no_parking_unit_price_median">中位數單價(不計車位)</option>
 <option value="price_median">中位數房價</option>
 <option value="area_median">中位數坪數</option>
+<!--
 <option value="unit_price_avg">平均單價(計入車位)</option>
-<option value="no_parking_unit_price_avg">平均單價(不計車位)</option>
+<option value="no_parking_unit_price_avg">平均單價(排除車位)</option>
 <option value="price_avg">平均房價</option>
 <option value="area_avg">平均坪數</option>
+-->
 <option value="cnt" selected>總交易筆數</option>
 <option value="price_total">總交易額</option>
 </select>
