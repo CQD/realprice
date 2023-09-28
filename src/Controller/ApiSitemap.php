@@ -17,10 +17,10 @@ class ApiSitemap extends ControllerBase
         ];
         foreach ($options["area"] as $area => $subareas) {
             $area = urlencode($area);
-            $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&y_left=unit_price_median&y_right=cnt";
+            $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&y_left=no_parking_unit_price_median&y_right=cnt";
             foreach ($subareas as $subarea) {
                 $subarea = urlencode($subarea);
-                $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&subarea={$subarea}&y_left=unit_price_median&y_right=cnt";
+                $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&subarea={$subarea}&y_left=no_parking_unit_price_median&y_right=cnt";
             }
         }
         return [
