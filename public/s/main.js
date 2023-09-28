@@ -269,7 +269,7 @@ function update_chart_with_query() {
     };
     for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
         const field_ele = document.getElementById(field);
-        if (!params.hasOwnProperty(field)) {
+        if (!params.hasOwnProperty(field) || !params[field]) {
             field_ele.value = DEFAULT_VALUES[field] || "";
             continue;
         }
