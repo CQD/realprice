@@ -31,7 +31,7 @@ CREATE TABLE house_transactions (
     district_id INTEGER,
     transaction_date INTEGER,
     type_id INTEGER,
-    build_date INTEGER,
+    age_day INTEGER,
     area REAL,
     price INTEGER,
     parking_area REAL,

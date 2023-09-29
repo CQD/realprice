@@ -85,7 +85,7 @@ function process($countyId, $countyName)
 
     $stmt = $db->prepare(
         "INSERT INTO house_transactions "
-        ."(county_id, district_id, transaction_date, type_id, build_date, area, price, parking_area, parking_price)"
+        ."(county_id, district_id, transaction_date, type_id, age_day, area, price, parking_area, parking_price)"
         ."VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
     while ($line = fgets($fp)) {
@@ -149,7 +149,7 @@ function process($countyId, $countyName)
             $district_ids[$dist],
             $transactionDate,
             $type_ids[$type],
-            $buildingDate,
+            $transactionDate - $buildingDate,
             $area * 0.3025,
             $price,
             $parkingArea * 0.3025,

@@ -37,7 +37,7 @@ class ApiData extends ControllerBase
         $options = require __DIR__ . "/../../build/option.php";
 
         $conditions = [
-            "(transaction_date - build_date)/86400.0/365.0 BETWEEN CAST(:agemin AS number) AND CAST(:agemax AS number)",
+            "age_day BETWEEN CAST(:agemin AS number)*86400*365 AND CAST(:agemax AS number)*86400*365",
             "transaction_date BETWEEN $start_time AND $end_time",
         ];
 
