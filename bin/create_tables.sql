@@ -37,3 +37,7 @@ CREATE TABLE house_transactions (
     parking_area REAL,
     parking_price INTEGER
 );
+
+
+CREATE INDEX index_name
+ON house_transactions(county_id);
