@@ -333,5 +333,7 @@ window.addEventListener("popstate", (event) => {
 if (window.location.search) {
     update_chart_with_query();
 } else {
-    chart_msg("請選擇查詢條件...");
+    document.getElementById("area").value = '臺北市';
+    document.getElementById("age_max").value = '3';
+    click_gen_btn();
 }
