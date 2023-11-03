@@ -64,3 +64,25 @@ function typeIds(): array
         "套房" => 4,
     ];
 }
+
+function toBase62($id) {
+    $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $base = strlen($chars);
+    $str = "";
+    while ($id > 0) {
+        $str .= $chars[$id % $base];
+        $id = (int) ($id / $base);
+    }
+    return $str || "0";
+}
+
+function fromBase62($str) {
+    $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $base = strlen($chars);
+    $id = 0;
+
+    for ($i = 0; $i < strlen($str); $i++) {
+        $id = $id * $base + strpos($chars, $str[$i]);
+    }
+    return $id;
+}
