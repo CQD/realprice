@@ -17,9 +17,15 @@ deep-clean: clean
 deploy:
 	gcloud app deploy --project='$(APPLICATION_ID)' --promote --stop-previous-version $(OPTIONS)
 
+test: vendor/bin/phpunit
+	vendor/bin/phpunit tests
+
 ########################
 
-vendor/autoload.php: composer.json
+vendor/autoload.php: composer.lock
+	composer install
+
+vendor/bin/phpunit: composer.lock
 	composer install
 
 option: public/build/option.json build/option.php
