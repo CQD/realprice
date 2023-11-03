@@ -26,8 +26,33 @@ class BaseTest extends TestCase
             "ZZ" => 3843,
         ];
         foreach ($values as $str => $num) {
-            $this->assertEquals($str, toBase62($num));
-            $this->assertEquals($num, fromBase62((string)($str)));
+            $this->assertEquals($str, toBase62($num), "toBase62({$num}) 要等於 {$str}");
+            $this->assertEquals($num, fromBase62((string)($str)), "fromBase62({$str}) 要等於 {$num}");
+        }
+    }
+
+    public function testPadBase32()
+    {
+        $values = [
+            "00" => 0,
+            "01" => 1,
+            "09" => 9,
+            "0a" => 10,
+            "0z" => 35,
+            "0A" => 36,
+            "0Z" => 61,
+            "10" => 62,
+            "19" => 71,
+            "1a" => 72,
+            "1z" => 97,
+            "1A" => 98,
+            "1Z" => 123,
+            "20" => 124,
+            "ZZ" => 3843,
+        ];
+        foreach ($values as $str => $num) {
+            $this->assertEquals($str, toBase62($num, pad: 2), "toBase62({$num}, pad:2) 要等於 {$str}");
+            $this->assertEquals($num, fromBase62((string)($str)), "fromBase62({$str}) 要等於 {$num}");
         }
     }
 }

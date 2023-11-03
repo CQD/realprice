@@ -65,15 +65,21 @@ function typeIds(): array
     ];
 }
 
-function toBase62($id) {
+function toBase62($id, $pad = 0) {
     $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $base = strlen($chars);
+    $orig_id = $id;
     $str = "";
     while ($id > 0) {
-        $str .= $chars[$id % $base];
+        $str = $chars[$id % $base] . $str;
         $id = (int) ($id / $base);
     }
-    return $str || "0";
+
+    if ($pad > 0) {
+        $str = str_pad($str, $pad, "0", STR_PAD_LEFT);
+    }
+
+    return $str ? $str : "0";
 }
 
 function fromBase62($str) {
