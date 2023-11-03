@@ -65,10 +65,12 @@ function typeIds(): array
     ];
 }
 
-function toBase62($id, $pad = 0) {
+function toBase62(int $id, int $pad = 0) {
     $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $base = strlen($chars);
-    $orig_id = $id;
+
+    $id = $id < 0 ? 3844 + $id : $id; // 2's complement
+
     $str = "";
     while ($id > 0) {
         $str = $chars[$id % $base] . $str;
@@ -82,7 +84,7 @@ function toBase62($id, $pad = 0) {
     return $str ? $str : "0";
 }
 
-function fromBase62($str) {
+function fromBase62(string $str) {
     $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     $base = strlen($chars);
     $id = 0;
@@ -90,5 +92,7 @@ function fromBase62($str) {
     for ($i = 0; $i < strlen($str); $i++) {
         $id = $id * $base + strpos($chars, $str[$i]);
     }
+
+    $id = $id > (3844/2 - 1) ? $id - 3844  : $id; // 2's complement
     return $id;
 }
