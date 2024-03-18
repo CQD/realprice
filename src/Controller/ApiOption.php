@@ -58,6 +58,9 @@ EOT;
 
     protected function getDataver() {
         $dirs = scandir(__DIR__ . '/../../data/');
+        $dirs = array_filter($dirs, function($dir) {
+            return preg_match('/^\d+$/', $dir);
+        });
 
         if (!$dirs) return "不明";
         return max($dirs);

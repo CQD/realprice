@@ -52,5 +52,6 @@ for key in ${keys[@]}; do
     else
         filepath=$($BASEDIR/download.sh $key $BASEDIR/../data)
         $BASEDIR/process.sh $filepath $key $BASEDIR/../data
+        touch $BASEDIR/../data/updated
     fi
 done

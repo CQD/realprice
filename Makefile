@@ -36,7 +36,7 @@ public/build/option.json: build/transactions.sqlite3 bin/build_option.php src/Co
 build/option.php: public/build/option.json
 	bin/json2php.php $< > $@
 
-build/transactions.sqlite3: bin/getall.sh
-	bin/build_sqlite.php > $@
+build/transactions.sqlite3: data/updated bin/getall.sh
+	bin/build_sqlite.php
 
-.PHONY: server build/option.php download
+.PHONY: server download
