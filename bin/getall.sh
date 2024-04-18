@@ -20,19 +20,23 @@ for tw_year in $(seq 102 $last_tw_year) ; do
     done
 done
 
-
+year=$(date +%Y)
 tw_year=$(( $year - 1911 ))
 month=$(date +%m)
 day=$(date +%d)
+today=$(date +%Y%m%d)
+
 
 # 把本年度已經經過的季的 key 加進來，不包含當季
-passed_q=0
+current_q=0
 for q in 1 2 3; do
     if [ $month -gt $(( $q * 3 )) ]; then
         key="$tw_year"S$q
         keys[$key]=$key
+    else
+        current_q=$q
+        break
     fi
-    passed_q=$q
 done
 
 # 把當季的前期 key 們都加進來，每個月的 1 / 11 / 21 日
@@ -41,8 +45,16 @@ year=$(date +%Y)
 today=$(date +%Y%m%d)
 latest_key=""
 for m in $(seq 1 12); do
+    if [ "$m" -le "$(( ($current_q - 1) * 3 ))" ]; then
+        continue;
+    fi
+
     for d in 1 11 21; do
         ymd=$(printf "%04d%02d%02d" $year $m $d)
+        if [ "$ymd" -ge "$today" ]; then
+            break;
+        fi
+
         if [ $ymd -lt $today ]; then
             keys[$ymd]=$ymd
             latest_key=$ymd
@@ -65,6 +77,19 @@ for key in $(ls $DATADIR | grep '^[0-9]\+$'); do
     fi
 done
 
+echo ----------------------------------------
+echo 會處理的 key 清單
+echo ----------------------------------------
+
+last_key="S"
+for key in $(echo "${!keys[@]}" | tr ' ' "\n" | sort -n); do
+    if [[ "$last_key" == *S* ]] && [[ "$key" != *S* ]] ; then echo; fi
+    echo -n "$key "
+    if [[ "$key" == *"S4" ]]; then echo ; fi
+    last_key=$key
+done
+echo
+echo ----------------------------------------
 
 #################################
 # 每個 key 各自拉檔案做處理
@@ -85,3 +110,7 @@ for key in $(echo ${!keys[@]} | tr " " "\n" | sort); do
         touch $DATADIR/updated
     fi
 done
+
+echo ----------------------------------------
+echo 資料下載完成
+echo ----------------------------------------
