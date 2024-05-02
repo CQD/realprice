@@ -42,6 +42,9 @@ if (__FILE__ === realpath($_SERVER['SCRIPT_NAME'])) {
     foreach (countyMap() as $county => $id) {
         process($id, $county);
     }
+    say("跑 VACUUM");
+    $db->query("VACUUM");
+    say("完成");
 }
 
 
@@ -162,7 +165,6 @@ function process($countyId, $countyName)
     say("已讀取 {$row_cnt} 筆資料，寫入 {$insert_cnt} 筆資料，拋棄 {$drop_cnt} 筆資料");
     $db->exec('COMMIT TRANSACTION');
     say("Transaction comitted");
-
 }
 
 function normalizeDate(string $orig)
