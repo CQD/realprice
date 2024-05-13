@@ -83,9 +83,10 @@ echo ----------------------------------------
 
 last_key="S"
 for key in $(echo "${!keys[@]}" | tr ' ' "\n" | sort -n); do
-    if [[ "$last_key" == *S* ]] && [[ "$key" != *S* ]] ; then echo; fi
+    if [[ "$last_key" == *S* ]] && [[ "$key" != *S* ]] ; then echo; echo; fi
     echo -n "$key "
     if [[ "$key" == *"S4" ]]; then echo ; fi
+    if [[ "$key" == "20"*"21" ]]; then echo ; fi
     last_key=$key
 done
 echo
