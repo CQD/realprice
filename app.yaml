@@ -1,4 +1,4 @@
-runtime: php82
+runtime: php83
 default_expiration: "1d"
 
 ###################################################
