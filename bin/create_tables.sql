@@ -40,4 +40,4 @@ CREATE TABLE house_transactions (
 
 
 CREATE INDEX index_name
-ON house_transactions(district_id);
+ON house_transactions(county_id);

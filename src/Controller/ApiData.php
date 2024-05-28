@@ -35,7 +35,6 @@ class ApiData extends ControllerBase
         $start_time = strtotime("2012-08-01") - 10;
         $end_time = time();
         $options = require __DIR__ . "/../../build/option.php";
-        $county_district_ids = $options["district_ids"];
 
         $conditions = [
             "age_day BETWEEN CAST(:agemin AS number)*86400*365 AND CAST(:agemax AS number)*86400*365",
@@ -69,13 +68,12 @@ class ApiData extends ControllerBase
 
         $district_ids = [];
         foreach ($districts ?: [] as $district) {
-            foreach ($county_district_ids as $county_id => $district_map) {
+            foreach ($options["district_ids"] as $county_id => $district_map) {
                 if ($counties && !in_array($county_id, $county_ids)) continue;
                 $district_ids[] = $district_map[$district] ?? null;
             }
         }
         $district_ids = array_filter($district_ids);
-        $district_ids = $district_ids ?: $county_district_ids[$county_id] ?? [];
 
         if ($district_ids) {
             $marks = [];
