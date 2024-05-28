@@ -127,8 +127,13 @@ function update_chart(params, push_history=true) {
     show_loading();
     chart_msg("載入中...");
 
+    const start_time = new Date();
+
     fetch(url)
-    .then(resp => resp.json())
+    .then(resp => {
+        console.log("Api response time:", new Date() - start_time, "ms")
+        return resp.json()
+    })
     .then(resp => {
         chart_msg("繪製中...");
         update_chart_with_data(resp.data, params);
