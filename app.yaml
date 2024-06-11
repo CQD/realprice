@@ -7,25 +7,17 @@ handlers:
 
 - url: /build
   static_dir: public/build
-  secure: always
-  redirect_http_response_code: 301
 
 - url: /favicon.ico
   static_files: public/favicon.png
   upload: public/favicon.png
-  secure: always
-  redirect_http_response_code: 301
 
 - url: /(.*\.(svg|png|txt|css|js))$
   static_files: public/\1
   upload: public/.*\.(svg|png|txt|css|js)$
-  secure: always
-  redirect_http_response_code: 301
 
 - url: /.*
   script: auto
-  secure: always
-  redirect_http_response_code: 301
 
 ###################################################
 
