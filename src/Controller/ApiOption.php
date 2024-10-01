@@ -57,13 +57,18 @@ EOT;
     }
 
     protected function getDataver() {
-        $dirs = scandir(__DIR__ . '/../../data/');
-        $dirs = array_filter($dirs, function($dir) {
+        $orig_dirs = scandir(__DIR__ . '/../../data/');
+        $dirs = array_filter($orig_dirs, function($dir) {
             return preg_match('/^\d+$/', $dir);
         });
 
-        if (!$dirs) return "不明";
-        return max($dirs);
+        if (!$dirs) {
+            $dirs = array_filter($orig_dirs, function($dir) {
+                return preg_match('/^\d+S\d$/', $dir);
+            });
+        }
+
+        return max($dirs ?: ["不明"]);
     }
 
     protected function getCountyIds() {
