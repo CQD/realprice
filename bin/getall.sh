@@ -29,7 +29,7 @@ today=$(date +%Y%m%d)
 
 # 把本年度已經經過的季的 key 加進來，不包含當季
 current_q=0
-for q in 1 2 3; do
+for q in 1 2 3 4; do
     if [ $month -gt $(( $q * 3 )) ]; then
         key="$tw_year"S$q
         keys[$key]=$key
