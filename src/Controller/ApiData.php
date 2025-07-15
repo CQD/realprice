@@ -100,7 +100,7 @@ WITH parking_unit_prices AS (
 
 transactions AS (
     SELECT
-        price, area, parking_area,
+        price, area / 1000 AS area, parking_area / 1000 AS parking_area,
         counties.name as county,
         districts.name as district,
         types.name as type,

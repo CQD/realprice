@@ -32,9 +32,9 @@ CREATE TABLE house_transactions (
     transaction_date INTEGER,
     type_id INTEGER,
     age_day INTEGER,
-    area REAL,
+    area INTEGER,
     price INTEGER,
-    parking_area REAL,
+    parking_area REINTEGERAL,
     parking_price INTEGER
 );
 

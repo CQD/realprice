@@ -153,9 +153,9 @@ function process($countyId, $countyName)
             $transactionDate,
             $type_ids[$type],
             $transactionDate - $buildingDate,
-            $area * 0.3025,
+            (int) ($area * 0.3025 * 1000),
             $price,
-            $parkingArea * 0.3025,
+            (int) ($parkingArea * 0.3025 * 1000),
             $parkingPrice,
         ]);
         $insert_cnt++;
