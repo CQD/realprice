@@ -34,11 +34,15 @@ class ApiData extends ControllerBase
     ) {
         $start_time = strtotime("2012-08-01") - 10;
         $end_time = time();
+
+        $start_dt = ($start_time + 8 * 3600) / 86400;
+        $end_dt = ($end_time + 8 * 3600) / 86400;
+
         $options = require __DIR__ . "/../../build/option.php";
 
         $conditions = [
-            "age_day BETWEEN CAST(:agemin AS number)*86400*365 AND CAST(:agemax AS number)*86400*365",
-            "transaction_date BETWEEN $start_time AND $end_time",
+            "age_day BETWEEN CAST(:agemin AS number)*365 AND CAST(:agemax AS number)*365",
+            "transaction_date BETWEEN $start_dt AND $end_dt",
         ];
 
         $condition_params = [
@@ -87,7 +91,7 @@ class ApiData extends ControllerBase
         $sql = <<<EOT
 WITH parking_unit_prices AS (
     SELECT
-        strftime("%Y/%m", transaction_date, 'unixepoch') as ym,
+        strftime("%Y/%m", transaction_date * 86400 - 8 * 3600, 'unixepoch') as ym,
         parking_unit_price(parking_area, parking_price, area, price) AS parking_unit_price
     FROM house_transactions AS h
     WHERE %CONDITIONS%
@@ -96,7 +100,7 @@ WITH parking_unit_prices AS (
 
 transactions AS (
     SELECT
-        price, area, transaction_date, parking_area,
+        price, area, parking_area,
         counties.name as county,
         districts.name as district,
         types.name as type,
@@ -104,9 +108,9 @@ transactions AS (
             WHEN parking_price THEN parking_price
             ELSE p.parking_unit_price * parking_area
         END AS parking_price,
-        strftime("%Y/%m", transaction_date, 'unixepoch') AS ym
+        strftime("%Y/%m", transaction_date * 86400 - 8 * 3600, 'unixepoch') AS ym
     FROM house_transactions AS h
-    LEFT JOIN parking_unit_prices AS p on strftime("%Y/%m", transaction_date, 'unixepoch') = p.ym
+    LEFT JOIN parking_unit_prices AS p on strftime("%Y/%m", transaction_date * 86400 - 8 * 3600, 'unixepoch') = p.ym
     LEFT JOIN counties ON h.county_id = counties.id
     LEFT JOIN districts ON h.district_id = districts.id
     LEFT JOIN types ON h.type_id = types.id

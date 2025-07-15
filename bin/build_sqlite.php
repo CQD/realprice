@@ -186,7 +186,15 @@ function normalizeDate(string $orig)
     $m = floor($in / 100) % 100;
     $d = $in % 100;
     $time = strtotime("$y-$m-$d");
-    return $time;
+
+    // 把 unix timestamp 轉成日數，減小 sqlite 裡的數字大小
+    if ($time === false) {
+        return null;
+    }
+
+    $dt = ($time + 8 * 3600) / 86400; // 台灣時間是 UTC+8
+
+    return $dt;
 }
 
 ///////////////////////////////////////////

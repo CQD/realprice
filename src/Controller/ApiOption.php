@@ -34,6 +34,7 @@ class ApiOption extends ControllerBase
 
     protected function getArea() {
         $twoYearAgo = date("Ymd", strtotime("2 year ago"));
+        $twoYearAgoDt = ($twoYearAgo + 8 * 3600) / 86400;
 
         $sql = <<<EOT
 SELECT c.name as county, d.name as district
@@ -41,7 +42,7 @@ FROM house_transactions AS h
 JOIN districts AS d ON d.id = h.district_id
 JOIN counties AS c ON c.id = d.county_id
 GROUP BY county, district
-ORDER BY count(IIF(transaction_date > {$twoYearAgo}, 1, NULL)) DESC
+ORDER BY count(IIF(transaction_date > {$twoYearAgoDt}, 1, NULL)) DESC
 EOT;
 
         $result = [];
