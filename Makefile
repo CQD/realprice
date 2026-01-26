@@ -1,6 +1,6 @@
 APPLICATION_ID=mythical-temple-395806
 
-build: vendor/autoload.php download | option build/transactions.sqlite3
+build: vendor/autoload.php download | option build/transactions.sqlite3 cache
 
 download:
 	bin/getall.sh
@@ -13,6 +13,7 @@ clean:
 
 deep-clean: clean
 	rm build/transactions.sqlite3 || true
+	rm -rf build/cache || true
 
 deploy:
 	gcloud app deploy --project='$(APPLICATION_ID)' --promote --stop-previous-version $(OPTIONS)
@@ -36,7 +37,12 @@ public/build/option.json: build/transactions.sqlite3 bin/build_option.php src/Co
 build/option.php: public/build/option.json
 	bin/json2php.php $< > $@
 
+cache: build/cache
+
+build/cache: build/transactions.sqlite3 build/option.php
+	bin/build_cache.php
+
 build/transactions.sqlite3: data/updated bin/getall.sh
 	bin/build_sqlite.php
 
-.PHONY: server download
+.PHONY: server download cache
