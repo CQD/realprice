@@ -7,10 +7,71 @@ use PDO;
 class ApiData extends ControllerBase
 {
     protected $template = null;
+    private ?string $cachedContent = null;
+
+    public function __construct()
+    {
+        $cacheFile = $this->getCacheFile();
+        if ($cacheFile && file_exists($cacheFile)) {
+            $this->cachedContent = file_get_contents($cacheFile);
+            return; // 不初始化 SQLite 連線
+        }
+
+        parent::__construct();
+    }
+
+    private function getCacheFile(): ?string
+    {
+        // 檢查是否符合 cache 條件
+        $area = $_GET['area'] ?? null;
+        $subarea = $_GET['subarea'] ?? null;
+        $type = $_GET['type'] ?? null;
+        $parking = (int) ($_GET['parking'] ?? 0);
+        $age_min = $_GET['age_min'] ?? null;
+        $age_max = $_GET['age_max'] ?? null;
+
+        // 條件: 住宅大樓, parking=0, age_max=3, age_min 未指定
+        if ($type !== '住宅大樓') return null;
+        if ($parking !== 0) return null;
+        if ($age_max !== '3' && $age_max !== 3) return null;
+        if ($age_min !== null && $age_min !== '') return null;
+
+        // 條件: 單一縣市
+        if (!$area || str_contains($area, ',')) return null;
+
+        $options = require __DIR__ . '/../../build/option.php';
+        $county_id = $options['county_ids'][$area] ?? null;
+        if (!$county_id) return null;
+
+        $cache_dir = __DIR__ . '/../../build/cache';
+
+        // 單一鄉鎮市區
+        if ($subarea && !str_contains($subarea, ',')) {
+            $district_id = $options['district_ids'][$county_id][$subarea] ?? null;
+            if ($district_id) {
+                return "{$cache_dir}/{$county_id}/{$district_id}.json";
+            }
+            return null;
+        }
+
+        // 整個縣市 (無 subarea)
+        if (!$subarea) {
+            return "{$cache_dir}/{$county_id}/county.json";
+        }
+
+        return null;
+    }
+
     protected function logic()
     {
         header('Content-Type: application/json');
         header('Cache-control: public, max-age=86400');
+
+        if ($this->cachedContent !== null) {
+            echo $this->cachedContent;
+            return;
+        }
+
         [$sql, $data] = $this->getData(...$this->parseParams());
 
         $response = [
