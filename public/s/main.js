@@ -247,9 +247,10 @@ function chart_params() {
     const type = document.getElementById("type").value;
     if (type) params.type = type;
 
-    const subarea_eles = document.querySelectorAll("input[name='subarea']:checked");
-    if (subarea_eles.length) {
-        params.subarea = Array.from(subarea_eles).map(ele => ele.value).join(",");
+    const subarea_ele = document.querySelector("input[name='subarea']:checked");
+    const subarea = subarea_ele ? subarea_ele.value : null;
+    if (subarea && subarea != "全區域") {
+        params.subarea = subarea;
     }
 
     for (const age_field of ["age_min", "age_max"]) {
@@ -287,11 +288,10 @@ function update_chart_with_query() {
 
     update_subareas();
 
-    document.querySelectorAll("input[name='subarea']").forEach(ele => ele.checked = false);
     if (params.hasOwnProperty("subarea")) {
-        params.subarea.split(",").forEach(subarea => {
-            document.getElementById(`subarea_${subarea}`).checked = true;
-        });
+        document.querySelector(`#subarea_${params.subarea}`).checked = true;
+    } else {
+        document.querySelector("#subarea_全區域").checked = true;
     }
 
     params.v = ASSET_VERSION || (new Date().getDate());
@@ -307,16 +307,20 @@ function update_subareas() {
     const subareas = document.getElementById("subareas");
     subareas.querySelectorAll(".checkbox-wrapper").forEach(ele => ele.remove());
 
-    for (let subarea of options["area"][area]) {
+    for (let subarea of ["全區域", ...options["area"][area]]) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("checkbox-wrapper");
 
         const opt = document.createElement("input");
-        opt.type = "checkbox";
+        opt.type = "radio";
         opt.textContent = subarea;
         opt.value = subarea;
         opt.name = `subarea`;
         opt.id = `subarea_${subarea}`;
+
+        if (subarea == "全區域") {
+            opt.checked = true;
+        }
 
         const lbl = document.createElement("label");
         lbl.textContent = `${subarea} `;
