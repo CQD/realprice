@@ -12,15 +12,16 @@ class ApiSitemap extends ControllerBase
 
         $options = require __DIR__ . "/../../build/option.php";
 
-        $urls = [
-            "https://realprice.cqd.tw/",
-        ];
+        $base = "https://realprice.cqd.tw";
+        $urls = ["{$base}/"];
         foreach ($options["area"] as $area => $subareas) {
-            $area = urlencode($area);
-            $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&y_left=no_parking_unit_price_median&y_right=cnt";
-            foreach ($subareas as $subarea) {
-                $subarea = urlencode($subarea);
-                $urls[] = "https://realprice.cqd.tw/?area={$area}&parking=0&subarea={$subarea}&y_left=no_parking_unit_price_median&y_right=cnt";
+            $enc_area = urlencode($area);
+            foreach ($options["type"] as $type) {
+                $enc_type = urlencode($type);
+                $urls[] = "{$base}/{$enc_area}/{$enc_type}";
+                foreach ($subareas as $subarea) {
+                    $urls[] = "{$base}/{$enc_area}/" . urlencode($subarea) . "/{$enc_type}";
+                }
             }
         }
         return [
