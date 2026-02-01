@@ -323,7 +323,9 @@ function update_subareas() {
     const subareas = document.getElementById("subareas");
     subareas.querySelectorAll(".checkbox-wrapper").forEach(ele => ele.remove());
 
-    for (let subarea of ["全區域", ...options["area"][area]]) {
+    const area_subareas = options["area"][area];
+    const subarea_list = area_subareas.length <= 1 ? ["全區域"] : ["全區域", ...area_subareas];
+    for (let subarea of subarea_list) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("checkbox-wrapper");
 

@@ -135,12 +135,14 @@ gtag('config', 'G-XPVFS6XXKD');
 <div class="checkbox-wrapper">
 <input type="radio" value="" name="subarea" id="subarea_全區域" checked><label for="subarea_全區域">全區域</label>
 </div>
+<?php if (count($OPTION["area"][$area]) > 1): ?>
 <?php foreach ($OPTION["area"][$area] as $_subarea): ?>
 <div class="checkbox-wrapper">
 <input type="radio" value="<?=e($_subarea)?>" name="subarea" id="subarea_<?=e($_subarea)?>">
 <label for="subarea_<?=e($_subarea)?>"><?=e($_subarea)?></label>
 </div>
 <?php endforeach;?>
+<?php endif;?>
 </fieldset>
 
 <div class="y_select_group">
