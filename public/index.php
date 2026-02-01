@@ -1,6 +1,7 @@
 <?php
 
 include __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/index_functions.php';
 
 $map = [
     '/' => 'Index',
@@ -22,45 +23,17 @@ if (false !== $pos = strpos($path, '?')) {
 $controller = $map[$path] ?? null;
 if (!$controller && !str_starts_with($path, '/api/') && !str_starts_with($path, '/s/') && $path !== '/favicon.png' && $path !== '/og.png') {
     $options = require __DIR__ . '/../build/option.php';
-    $segments = array_values(array_filter(explode('/', $path), fn($s) => $s !== ''));
-    $segments = array_map('urldecode', $segments);
+    $result = resolve_short_url($path, $options);
 
-    // 台 → 臺 正規化
-    $segments = array_map(fn($s) => str_replace('台', '臺', $s), $segments);
-    $needs_redirect = (array_map('urldecode', array_values(array_filter(explode('/', $path), fn($s) => $s !== ''))) !== $segments);
-
-    $valid = false;
-    if (count($segments) >= 1 && count($segments) <= 3) {
-        $area = $segments[0];
-        if (array_key_exists($area, $options['area'])) {
-            $valid = true;
-            $subareas = $options['area'][$area];
-            $types = $options['type'];
-
-            if (count($segments) >= 2) {
-                $seg1 = $segments[1];
-                if (!in_array($seg1, $subareas) && !in_array($seg1, $types)) {
-                    $valid = false;
-                }
-            }
-            if (count($segments) >= 3) {
-                $seg2 = $segments[2];
-                if (!in_array($seg2, $types)) {
-                    $valid = false;
-                }
-            }
-        }
-    }
-
-    if ($valid && $needs_redirect) {
-        $redirect = '/' . implode('/', array_map('urlencode', $segments));
+    if ($result['redirect']) {
+        $redirect = $result['redirect'];
         $qs = $_SERVER['QUERY_STRING'] ?? '';
         if ($qs) $redirect .= '?' . $qs;
         header("Location: $redirect", true, 301);
         exit;
     }
 
-    if ($valid) {
+    if ($result['valid']) {
         $controller = 'Index';
     }
 }
