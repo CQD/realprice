@@ -166,7 +166,7 @@ function update_chart(params, push_history=true) {
     document.getElementById("pagetitle").textContent = title;
     document.title = `${title} | 實價登錄房價趨勢`;
     if (push_history) {
-        window.history.pushState(params, null, "?" + new URLSearchParams(params));
+        window.history.pushState(params, null, build_short_url(params));
     }
 }
 
@@ -264,32 +264,48 @@ function chart_params() {
 }
 
 function update_chart_with_query() {
-    const params = Object.fromEntries((new URLSearchParams(window.location.search)).entries());
+    let params;
+    const qs = new URLSearchParams(window.location.search);
 
-    if (!params.hasOwnProperty("area")) return;
+    if (qs.has("area")) {
+        // 舊格式 query parameter，向下相容
+        params = Object.fromEntries(qs.entries());
+        for (const key in DEFAULT_VALUES) {
+            if (!params[key] && !qs.has(key)) params[key] = DEFAULT_VALUES[key];
+        }
+        // replaceState 為新格式短網址
+        const short_url = build_short_url(params);
+        window.history.replaceState(params, null, short_url);
+    } else if (SHORT_URL_PARAMS) {
+        // 短網址：PHP 已解析好路徑參數
+        params = Object.assign({}, SHORT_URL_PARAMS);
+        // 合併 query parameter
+        for (const [key, val] of qs.entries()) {
+            params[key] = val;
+        }
+        for (const key in DEFAULT_VALUES) {
+            if (!params[key] && !qs.has(key)) params[key] = DEFAULT_VALUES[key];
+        }
+    } else {
+        // 從路徑解析 (popstate)
+        params = parse_short_url();
+        if (!params) return;
+    }
 
-    const DEFAULT_VALUES = {
-        "y_left": "unit_price_median",
-        "y_right": "cnt",
-        "parking": "0",
-    };
     for (const field of ["age_min", "age_max", "area", "parking", "type", "y_right", "y_left"]) {
         const field_ele = document.getElementById(field);
-        if (!params.hasOwnProperty(field) || !params[field]) {
+        if (!params[field]) {
             field_ele.value = DEFAULT_VALUES[field] || "";
             continue;
         }
-        document.getElementById(field).value = params[field];
-    }
-
-    for (const field in DEFAULT_VALUES) {
-        params[field] = params[field] ?? DEFAULT_VALUES[field];
+        field_ele.value = params[field];
     }
 
     update_subareas();
 
-    if (params.hasOwnProperty("subarea")) {
-        document.querySelector(`#subarea_${params.subarea}`).checked = true;
+    if (params.subarea) {
+        const el = document.querySelector(`#subarea_${params.subarea}`);
+        if (el) el.checked = true;
     } else {
         document.querySelector("#subarea_全區域").checked = true;
     }
@@ -332,6 +348,77 @@ function update_subareas() {
     }
 }
 
+const DEFAULT_VALUES = {
+    "type": "住宅大樓",
+    "y_left": "no_parking_unit_price_median",
+    "y_right": "cnt",
+    "parking": "0",
+    "age_max": "3",
+};
+
+function build_short_url(params) {
+    let path = "/" + encodeURIComponent(params.area);
+    if (params.subarea) {
+        path += "/" + encodeURIComponent(params.subarea);
+    }
+    if (params.type) {
+        path += "/" + encodeURIComponent(params.type);
+    }
+
+    const query_params = {};
+    for (const key of ["type", "parking", "age_min", "age_max", "y_left", "y_right"]) {
+        const val = params[key];
+        // type 在路徑中處理，但「類型不拘」(空值) 需要明確標記
+        if (key === "type") {
+            if (val === "" || val === undefined || val === null) {
+                query_params["type"] = "";
+            }
+            continue;
+        }
+        if (val !== undefined && val !== null && val !== "" && val !== DEFAULT_VALUES[key]) {
+            query_params[key] = val;
+        }
+    }
+
+    const qs = new URLSearchParams(query_params).toString();
+    return qs ? path + "?" + qs : path;
+}
+
+function parse_short_url() {
+    const path = decodeURIComponent(window.location.pathname);
+    const segments = path.split("/").filter(s => s !== "");
+    if (segments.length === 0) return null;
+
+    const params = {};
+    params.area = segments[0];
+
+    if (segments.length >= 2) {
+        if (TYPES.includes(segments[1])) {
+            params.type = segments[1];
+        } else {
+            params.subarea = segments[1];
+        }
+    }
+    if (segments.length >= 3) {
+        if (TYPES.includes(segments[2])) {
+            params.type = segments[2];
+        }
+    }
+
+    // query parameter 覆蓋
+    const qs = new URLSearchParams(window.location.search);
+    for (const [key, val] of qs.entries()) {
+        params[key] = val;
+    }
+
+    // 套用預設值（但 query param 明確設為空值的不覆蓋）
+    for (const key in DEFAULT_VALUES) {
+        if (!params[key] && !qs.has(key)) params[key] = DEFAULT_VALUES[key];
+    }
+
+    return params;
+}
+
 //////////////////////////////
 
 window.addEventListener("popstate", (event) => {
@@ -339,10 +426,14 @@ window.addEventListener("popstate", (event) => {
 });
 
 
-if (window.location.search) {
+if (window.location.search || SHORT_URL_PARAMS) {
+    update_chart_with_query();
+} else if (window.location.pathname !== "/" && parse_short_url()) {
     update_chart_with_query();
 } else {
     document.getElementById("area").value = '臺北市';
+    document.getElementById("type").value = '住宅大樓';
     document.getElementById("age_max").value = '3';
+    update_subareas();
     click_gen_btn();
 }

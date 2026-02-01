@@ -9,27 +9,62 @@ $PARKING_MAP = [
     "-1" => "無車位",
 ];
 
-$area = $_GET["area"] ?? null;
+// 從路徑解析短網址參數，向下相容舊的 query parameter
+$_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$_segments = array_values(array_filter(explode('/', $_path), fn($s) => $s !== ''));
+$_types = $OPTION["type"]; // ['住宅大樓', '華廈', '透天厝', '公寓', '套房']
+
+$_path_area = null;
+$_path_subarea = null;
+$_path_type = null;
+
+if (count($_segments) >= 1) {
+    $_path_area = urldecode($_segments[0]);
+}
+if (count($_segments) >= 2) {
+    $_seg1 = urldecode($_segments[1]);
+    if (in_array($_seg1, $_types)) {
+        $_path_type = $_seg1;
+    } else {
+        $_path_subarea = $_seg1;
+    }
+}
+if (count($_segments) >= 3) {
+    $_seg2 = urldecode($_segments[2]);
+    if (in_array($_seg2, $_types)) {
+        $_path_type = $_seg2;
+    }
+}
+
+// query parameter 優先（向下相容），再 fallback 到路徑解析
+$area = $_GET["area"] ?? $_path_area ?? null;
 $area = array_key_exists($area, $OPTION["area"]) ? $area : array_keys($OPTION["area"])[0];
 
 $parking = $_GET["parking"] ?? 0;
 $parking = ($PARKING_MAP[$parking] ?? false) ? $parking : 0;
 
-$type = $_GET["type"] ?? null;
-$type = in_array($type, $OPTION["type"]) ? $type : $OPTION["type"][0];
+$type = $_GET["type"] ?? $_path_type ?? null;
+$type = in_array($type, $OPTION["type"]) ? $type : null;
+
+$subarea = $_GET["subarea"] ?? $_path_subarea ?? null;
 
 $age_min = $_GET["age_min"] ?? null ?: null;
 $age_max = $_GET["age_max"] ?? null ?: null;
 if (!is_numeric($age_min)) $age_min = null;
 if (!is_numeric($age_max)) $age_max = null;
 
-function og_title() {
-    global $PARKING_MAP, $parking, $type, $age_min, $age_max;
+// 判斷是否為短網址進入（路徑有 area 且沒有 ?area= query param）
+$is_short_url = $_path_area && !isset($_GET["area"]) && array_key_exists($_path_area, $OPTION["area"]);
 
-    if (!isset($_GET["area"])) return "實價登錄房價趨勢";
+function og_title() {
+    global $PARKING_MAP, $parking, $type, $age_min, $age_max, $area, $subarea, $is_short_url;
+
+    if (!isset($_GET["area"]) && !$is_short_url) return "實價登錄房價趨勢";
+
+    $_subarea_display = $_GET["subarea"] ?? $subarea ?? null;
 
     $og_title = [
-        $_GET["area"] . ((isset($_GET["subarea"])) ? " (" . $_GET["subarea"] . ")" : ""),
+        $area . ($_subarea_display ? " (" . $_subarea_display . ")" : ""),
         $type ?: " 建築類型不拘",
         $PARKING_MAP[$parking],
         "屋齡 {$age_min}年 ~ {$age_max}年",
@@ -81,9 +116,9 @@ gtag('config', 'G-XPVFS6XXKD');
 </select>
 
 <select id="type">
-<option value="">類型不拘</option>
+<option value=""<?=(!$type) ? " selected" : ""?>>類型不拘</option>
 <?php foreach($OPTION["type"] as $_type):?>
-<option value="<?=e($_type)?>"<?=($_type == $type) ? " selected" : ""?>><?=e($_type)?></option>
+<option value="<?=e($_type)?>"<?=($_type === $type) ? " selected" : ""?>><?=e($_type)?></option>
 <?php endforeach; ?>
 </select>
 
@@ -181,7 +216,20 @@ gtag('config', 'G-XPVFS6XXKD');
 
 <script>
 const options = <?=json_encode($OPTION)?>;
+const TYPES = <?=json_encode($OPTION["type"])?>;
 ASSET_VERSION = '<?=ASSET_VERSION?>';
+<?php if ($is_short_url): ?>
+const SHORT_URL_PARAMS = <?=json_encode(array_filter([
+    'area' => $area,
+    'subarea' => $subarea,
+    'type' => $type,
+    'parking' => $_GET['parking'] ?? null,
+    'age_min' => $age_min,
+    'age_max' => $age_max,
+], fn($v) => $v !== null))?>;
+<?php else: ?>
+const SHORT_URL_PARAMS = null;
+<?php endif; ?>
 
 </script>
 
