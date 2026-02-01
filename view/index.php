@@ -109,7 +109,7 @@ gtag('config', 'G-XPVFS6XXKD');
 <header><div class="wrapper"><h1>實價登錄房價趨勢</h1><small id="pagetitle"><?=e(str_replace("實價登錄房價趨勢", "", $og_title))?></small></div></header>
 <section id="input">
 
-<select id="area" onchange="update_subareas()">
+<select id="area" onchange="update_subareas(); click_gen_btn()">
 <?php foreach($OPTION["area"] as $_area => $_subareas):?>
 <option id="area_<?=e($_area)?>" value="<?=e($_area)?>"<?=($_area == $area) ? " selected" : ""?>><?=e($_area)?></option>
 <?php endforeach; ?>
