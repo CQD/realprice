@@ -56,6 +56,7 @@ foreach ($options['county_ids'] as $county_name => $county_id) {
     ob_start();
     $controller->run();
     $json = ob_get_clean();
+    unset($controller);
 
     file_put_contents("{$county_dir}/county.json", $json);
     say("  -> county.json");
@@ -70,6 +71,7 @@ foreach ($options['county_ids'] as $county_name => $county_id) {
         ob_start();
         $controller->run();
         $json = ob_get_clean();
+        unset($controller);
 
         file_put_contents("{$county_dir}/{$district_id}.json", $json);
     }
