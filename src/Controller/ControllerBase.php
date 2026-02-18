@@ -17,7 +17,7 @@ abstract class ControllerBase
         $this->path = $path;
 
         $data_file = __DIR__  . '/../../build/transactions.sqlite3';
-        $this->db = new \PDO("sqlite:{$data_file}");
+        $this->db = new \Pdo\Sqlite("sqlite:{$data_file}");
 
         // 註冊中位數函數
         // https://stackoverflow.com/posts/73635970/revisions
@@ -36,12 +36,12 @@ abstract class ControllerBase
             return $context[$middle];
         };
 
-        $this->db->sqliteCreateAggregate('median', $step_func, $percentile_func(0.5), 1);
-        $this->db->sqliteCreateAggregate('p25', $step_func, $percentile_func(0.25), 1);
-        $this->db->sqliteCreateAggregate('p75', $step_func, $percentile_func(0.75), 1);
+        $this->db->createAggregate('median', $step_func, $percentile_func(0.5), 1);
+        $this->db->createAggregate('p25', $step_func, $percentile_func(0.25), 1);
+        $this->db->createAggregate('p75', $step_func, $percentile_func(0.75), 1);
 
         // 註冊車位價格計算函數
-        $this->db->sqliteCreateAggregate(
+        $this->db->createAggregate(
             'parking_unit_price',
             // step function
             function($context, $row_number, $parking_area, $parking_price, $area, $price){
