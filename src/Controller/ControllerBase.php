@@ -21,12 +21,12 @@ abstract class ControllerBase
 
         // 註冊中位數函數
         // https://stackoverflow.com/posts/73635970/revisions
-        $step_func = function($context, $row_number, $value) {
+        $step_func = static function($context, $row_number, $value) {
             $context[] = $value;
             return $context;
         };
 
-        $percentile_func = fn($p) => function ($context, $row_count) use ($p) {
+        $percentile_func = static fn($p) => static function ($context, $row_count) use ($p) {
             sort($context, SORT_NUMERIC);
             $count = count($context);
             $middle = floor($count * $p);
@@ -44,7 +44,7 @@ abstract class ControllerBase
         $this->db->createAggregate(
             'parking_unit_price',
             // step function
-            function($context, $row_number, $parking_area, $parking_price, $area, $price){
+            static function($context, $row_number, $parking_area, $parking_price, $area, $price){
                 $context = $context ? $context : [
                     "parking_total_area" => 0,
                     "parking_total_price" => 0,
@@ -60,7 +60,7 @@ abstract class ControllerBase
             },
 
             // final function
-            function ($context, $row_count) {
+            static function ($context, $row_count) {
                 if (!$context) return 0;
                 if ($context["parking_total_area"] && $context["parking_total_price"]) {
                     return $context["parking_total_price"] / $context["parking_total_area"];
