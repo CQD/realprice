@@ -1,4 +1,5 @@
 APPLICATION_ID=mythical-temple-395806
+PY_VENV=./venv
 
 build: vendor/autoload.php download | stats
 
@@ -32,16 +33,16 @@ vendor/bin/phpunit: composer.lock
 # 統計資料 (Python + DuckDB，只在離線建置時使用)
 stats: build/site.php
 
-.venv/bin/python: requirements.txt
-	python3 -m venv .venv
-	.venv/bin/pip install -r requirements.txt
+$(PY_VENV)/bin/python: requirements.txt
+	python3 -m venv $(PY_VENV)
+	$(PY_VENV)/bin/pip install -r requirements.txt
 	touch $@
 
-data/raw.duckdb: data/updated bin/stats_load.py .venv/bin/python
-	.venv/bin/python bin/stats_load.py
+data/raw.duckdb: data/updated bin/stats_load.py $(PY_VENV)/bin/python
+	$(PY_VENV)/bin/python bin/stats_load.py
 
 build/site.json: data/raw.duckdb bin/stats_build.py
-	.venv/bin/python bin/stats_build.py
+	$(PY_VENV)/bin/python bin/stats_build.py
 
 build/site.php: build/site.json
 	bin/json2php.php $< > $@
