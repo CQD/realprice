@@ -14,7 +14,7 @@ $showRegionDetail = $level === 2 || ($level === 1 && !$hasDistricts);
 <link rel="canonical" href="<?=e($canonical)?>">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
-<meta name="theme-color" content="#fcfcfb">
+<meta name="theme-color" content="#f25500">
 <meta property="og:title" content="<?=e($title)?>">
 <meta property="og:description" content="<?=e($summary)?>">
 <meta property="og:image" content="https://realprice.cqd.tw/og.png">
