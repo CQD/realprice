@@ -143,6 +143,11 @@ function mAxis(o, showLabels = true) {
     axisLabel: { ...o._axis.axisLabel, show: showLabels, interval: (i, v) => v.endsWith("-01") && +v.slice(0, 4) % 2 === 0, formatter: v => v.slice(0, 4) },
   };
 }
+// 月份 category 軸 + 疊在同一個 grid 的隱形數值軸 (0 ~ 月份數)
+// 數值軸上的整數剛好是月份格子的邊界，「申報中」灰底掛在這條軸上才能對齊格子；category 軸收到小數會四捨五入
+function mAxes(o, showLabels = true) {
+  return [mAxis(o, showLabels), { type: "value", min: 0, max: M.length, show: false, axisPointer: { show: false, triggerTooltip: false } }];
+}
 const lineKey = color => `<i style="display:inline-block;width:12px;height:3px;border-radius:2px;background:${color};vertical-align:3px;margin-right:6px"></i>`;
 function tipRows(params, fmt) {
   const head = esc(params[0].axisValueLabel || params[0].name);
@@ -153,9 +158,18 @@ function tipRows(params, fmt) {
 function itemTip(fmtBody) {
   return { trigger: "item", confine: true, backgroundColor: css("--surface"), borderColor: css("--line"), textStyle: { color: css("--ink"), fontSize: 12 }, formatter: fmtBody };
 }
-function provisional() {
-  if (END >= LAST) return undefined;
-  return { silent: true, itemStyle: { color: "rgba(120,134,137,.12)" }, label: { show: true, position: "insideTop", color: css("--ink-3"), fontSize: 10, formatter: "申報中" }, data: [[{ xAxis: M[END + 1] }, { xAxis: M[LAST] }]] };
+// 「申報中」的月份畫灰底：從最後一個完整月份的右緣到圖的右緣；圖的 xAxis 要用 mAxes()
+function provisionalSeries(showLabel = true) {
+  if (END >= LAST) return [];
+  return [{
+    name: "_prov", type: "line", data: [], xAxisIndex: 1, silent: true,
+    markArea: {
+      silent: true, itemStyle: { color: "rgba(120,134,137,.25)" },
+      // 標籤放底部，避免跟右上方的線尾標籤重疊
+      label: { show: showLabel, position: "insideBottom", color: css("--ink-2"), fontSize: 11, formatter: "申報中" },
+      data: [[{ xAxis: END + 1 }, { xAxis: LAST + 1 }]],
+    },
+  }];
 }
 function lineSeries(name, data, color, extra = {}) {
   return {
@@ -216,9 +230,9 @@ function renderBands() {
     ...o, grid: { left: 44, right: 64, top: 36, bottom: 8 },
     legend: { top: 0, left: 0, icon: "roundRect", itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: BANDS.filter(b => S(b.k)).map(b => b.name) },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => wan(v) + " 萬/坪") },
-    xAxis: mAxis(o, false),
+    xAxis: mAxes(o, false),
     yAxis: { type: "value", ...o._axis, min: yMin, max: yMax, interval: yStep, axisLabel: { ...o._axis.axisLabel, formatter: v => v / 10000 } },
-    series,
+    series: [...series, ...provisionalSeries()],
     graphic: vis.length ? [] : [{ type: "text", left: "center", top: "middle", style: { text: "樣本不足", fill: css("--ink-3"), fontSize: 13 } }],
   }, true);
 
@@ -226,11 +240,12 @@ function renderBands() {
   chart("c-vol").setOption({
     ...o, grid: { left: 44, right: 64, top: 8, bottom: 22 },
     tooltip: { ...o.tooltip, axisPointer: { type: "shadow", shadowStyle: { color: "rgba(120,134,137,.12)" } }, formatter: p => tipRows(p, v => int(v) + " 筆") },
-    xAxis: mAxis(o),
+    xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, splitNumber: 2, axisLabel: { ...o._axis.axisLabel, formatter: v => v >= 1000 ? v / 1000 + "k" : v } },
     series: [
       { name: "成屋", type: "bar", stack: "v", data: ex ? ex.n : [], itemStyle: { color: css("--muted-mark") }, barCategoryGap: "15%" },
-      { name: "預售屋", type: "bar", stack: "v", data: pr ? pr.n : [], itemStyle: { color: css("--s2") }, markArea: provisional() },
+      { name: "預售屋", type: "bar", stack: "v", data: pr ? pr.n : [], itemStyle: { color: css("--s2") } },
+      ...provisionalSeries(false),
     ],
   }, true);
   echarts.connect([chart("c-price"), chart("c-vol")]);
@@ -262,11 +277,12 @@ function renderIndex() {
     ...o, grid: { left: 40, right: 64, top: 36, bottom: 24 },
     legend: { top: 0, left: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: [{ name: "品質調整指數", icon: "roundRect" }, { name: "單純中位數", icon: "path://M0,0h4v2h-4z M7,0h4v2h-4z M14,0h4v2h-4z" }] },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => v.toFixed(1)) },
-    xAxis: mAxis(o),
+    xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, scale: true },
     series: [
       lineSeries("品質調整指數", ix || [], css("--s1"), { lineStyle: { width: A.smooth ? 2 : 1.5, color: css("--s1") }, endLabel: { show: true, formatter: "調整後", color: css("--ink-2"), fontSize: 11, distance: 6 }, markLine: hundredLine() }),
       lineSeries("單純中位數", raw || [], css("--ink-3"), { lineStyle: { width: 1.25, type: [4, 3], color: css("--ink-3") }, endLabel: { show: true, formatter: "中位數", color: css("--ink-3"), fontSize: 11, distance: 6 } }),
+      ...provisionalSeries(),
     ],
     graphic: ix ? [] : [{ type: "text", left: "center", top: "middle", style: { text: "樣本不足，無法估計指數", fill: css("--ink-3"), fontSize: 13 } }],
   }, true);
@@ -466,9 +482,9 @@ function renderCmp() {
   chart("c-cmp").setOption({
     ...o, grid: { left: 40, right: 110, top: 16, bottom: 24 },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => v.toFixed(1)) },
-    xAxis: mAxis(o),
+    xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, scale: true, name: `${B.base} = 100`, nameTextStyle: { color: css("--ink-3"), fontSize: 11, align: "left" } },
-    series,
+    series: [...series, ...provisionalSeries()],
   }, true);
 }
 
