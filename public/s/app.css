@@ -93,7 +93,9 @@ label.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 1
   .kpi { padding: 10px 12px; scroll-snap-align: start; }
   .kpi .v { font-size: 20px; }
   .kpi .s { font-size: 11px; }
-  .panel { padding: 12px 10px; }
+  /* 圖表卡片貼齊螢幕左右邊緣；文字對齊頁面邊距，圖表再往外延伸 */
+  .panel { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding: 12px 16px; border-radius: 0; border-inline: 0; }
+  .panel .chart { width: auto; margin-inline: -12px; }
   .panel header { margin-bottom: 4px; }
 }
 .note { font-size: 12px; color: var(--ink-3); margin: 8px 0 0; }

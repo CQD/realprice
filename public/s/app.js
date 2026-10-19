@@ -120,6 +120,8 @@ const charts = {};
 // 手機版 (跟 app.css 的 600px 斷點一致)：線尾標籤會吃掉右側 64px 以上，改靠圖例辨識，把寬度留給圖
 const NARROW = matchMedia("(max-width: 600px)");
 const gridRight = r => NARROW.matches ? 20 : r;
+// 手機上圖表比卡片內距再往外延伸 12px (app.css)，靠左的圖例、標題要縮回來跟文字對齊
+const edgeLeft = () => NARROW.matches ? 12 : 0;
 function chart(id) {
   if (!charts[id]) charts[id] = echarts.init(document.getElementById(id), null, { renderer: "canvas" });
   return charts[id];
@@ -233,7 +235,7 @@ function renderBands() {
   const yMax = Math.ceil(bandMax * 1.02 / yStep) * yStep;
   chart("c-price").setOption({
     ...o, grid: { left: 44, right: gridRight(64), top: NARROW.matches ? 52 : 36, bottom: 8 },
-    legend: { top: 0, left: 0, icon: "roundRect", itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: BANDS.filter(b => S(b.k)).map(b => b.name) },
+    legend: { top: 0, left: edgeLeft(), icon: "roundRect", itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: BANDS.filter(b => S(b.k)).map(b => b.name) },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => wan(v) + " 萬/坪") },
     xAxis: mAxes(o, false),
     yAxis: { type: "value", ...o._axis, min: yMin, max: yMax, interval: yStep, axisLabel: { ...o._axis.axisLabel, formatter: v => v / 10000 } },
@@ -280,7 +282,7 @@ function renderIndex() {
   }
   chart("c-index").setOption({
     ...o, grid: { left: 40, right: gridRight(64), top: 36, bottom: 24 },
-    legend: { top: 0, left: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: [{ name: "品質調整指數", icon: "roundRect" }, { name: "單純中位數", icon: "path://M0,0h4v2h-4z M7,0h4v2h-4z M14,0h4v2h-4z" }] },
+    legend: { top: 0, left: edgeLeft(), itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: [{ name: "品質調整指數", icon: "roundRect" }, { name: "單純中位數", icon: "path://M0,0h4v2h-4z M7,0h4v2h-4z M14,0h4v2h-4z" }] },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => v.toFixed(1)) },
     xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, scale: true },
@@ -299,7 +301,7 @@ function renderRent() {
   const years = rent.map(x => String(x.y));
   const opt = (name, data, fmt, color, axisFmt) => ({
     ...o, grid: { left: 44, right: 24, top: 28, bottom: 22 },
-    title: { text: name, left: 0, top: 0, textStyle: { fontSize: 12, fontWeight: 500, color: css("--ink-2") } },
+    title: { text: name, left: edgeLeft(), top: 0, textStyle: { fontSize: 12, fontWeight: 500, color: css("--ink-2") } },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, fmt) },
     xAxis: { type: "category", data: years, boundaryGap: false, ...o._axis, splitLine: { show: false } },
     yAxis: { type: "value", ...o._axis, scale: true, splitNumber: 3, axisLabel: { ...o._axis.axisLabel, formatter: axisFmt } },
@@ -370,8 +372,8 @@ function textWidth(s) {
 }
 function vmLayout(c, m, range) {
   const lo = m.fmt(range[0]), hi = m.fmt(range[1]);
-  // 色條跟兩端文字各隔 10px (visualMap 預設 itemGap)，另留 8px 餘裕
-  const barLen = text => c.getWidth() - textWidth(text[0]) - textWidth(text[1]) - 28;
+  // 色條跟兩端文字各隔 10px (visualMap 預設 itemGap)，另留 8px 餘裕，兩側再扣掉 edgeLeft()
+  const barLen = text => c.getWidth() - textWidth(text[0]) - textWidth(text[1]) - 28 - 2 * edgeLeft();
   let text = [`${hi} ${m.hi}`, `${m.lo} ${lo}`];
   if (barLen(text) < 60) text = [hi, lo];
   return { text, itemHeight: Math.max(40, Math.min(160, barLen(text))) };
@@ -407,7 +409,7 @@ async function renderMap(scope, metric) {
       if (!r) return "";
       return `<b>${esc(fullName(r.id))}</b><br>${m.name}：<b style="font-family:${dataFont}">${p.data.raw == null ? "樣本不足" : m.fmt(p.data.raw)}</b><br><span style="color:${ink3}">近一年 ${wan(r.up)} 萬/坪・${int(r.n12)} 筆</span>`;
     }),
-    visualMap: visualMap(c, m, range, { left: 0, bottom: 0 }),
+    visualMap: visualMap(c, m, range, { left: edgeLeft(), bottom: 0 }),
     series: [{
       type: "map", map: mapName, roam: true, scaleLimit: { min: 1, max: 12 }, data,
       ...(scope === "TW" ? { boundingCoords: [[119.3, 25.35], [122.05, 21.85]] } : {}),
@@ -577,7 +579,8 @@ function setupNav() {
   // 跨過手機斷點時重畫有線尾標籤的圖
   NARROW.addEventListener("change", () => {
     if (P.level === 0) renderCmp();
-    else { renderBands(); renderIndex(); }
+    else { renderBands(); renderIndex(); if ($("#c-rent")) renderRent(); }
+    if ($("#c-map")) renderMap(P.level === 0 ? "TW" : P.county, B.metric);
   });
 })();
 })();
