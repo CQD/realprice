@@ -361,10 +361,26 @@ async function loadGeo() {
   }
   return GEO;
 }
-function visualMap(m, range, extra) {
+// 水平色階：兩端文字 + 色條，色條長度依圖寬調整，避免窄螢幕右端被切掉；太窄時兩端只留數字
+let measureCtx;
+function textWidth(s) {
+  measureCtx ||= document.createElement("canvas").getContext("2d");
+  measureCtx.font = `11px ${css("--font-body")}`;
+  return measureCtx.measureText(s).width;
+}
+function vmLayout(c, m, range) {
+  const lo = m.fmt(range[0]), hi = m.fmt(range[1]);
+  // 色條跟兩端文字各隔 10px (visualMap 預設 itemGap)，另留 8px 餘裕
+  const barLen = text => c.getWidth() - textWidth(text[0]) - textWidth(text[1]) - 28;
+  let text = [`${hi} ${m.hi}`, `${m.lo} ${lo}`];
+  if (barLen(text) < 60) text = [hi, lo];
+  return { text, itemHeight: Math.max(40, Math.min(160, barLen(text))) };
+}
+function visualMap(c, m, range, extra) {
+  c._vm = [m, range]; // resize 時重算色條長度
   return {
-    type: "continuous", min: range[0], max: range[1], calculable: false, orient: "horizontal", itemWidth: 10, itemHeight: 160,
-    text: [`${m.fmt(range[1])} ${m.hi}`, `${m.lo} ${m.fmt(range[0])}`], textStyle: { color: css("--ink-3"), fontSize: 11 },
+    type: "continuous", min: range[0], max: range[1], calculable: false, orient: "horizontal", itemWidth: 10,
+    ...vmLayout(c, m, range), textStyle: { color: css("--ink-3"), fontSize: 11 },
     inRange: { color: m.ramp() }, ...extra,
   };
 }
@@ -391,7 +407,7 @@ async function renderMap(scope, metric) {
       if (!r) return "";
       return `<b>${esc(fullName(r.id))}</b><br>${m.name}：<b style="font-family:${dataFont}">${p.data.raw == null ? "樣本不足" : m.fmt(p.data.raw)}</b><br><span style="color:${ink3}">近一年 ${wan(r.up)} 萬/坪・${int(r.n12)} 筆</span>`;
     }),
-    visualMap: visualMap(m, range, { left: 0, bottom: 0 }),
+    visualMap: visualMap(c, m, range, { left: 0, bottom: 0 }),
     series: [{
       type: "map", map: mapName, roam: true, scaleLimit: { min: 1, max: 12 }, data,
       ...(scope === "TW" ? { boundingCoords: [[119.3, 25.35], [122.05, 21.85]] } : {}),
@@ -459,15 +475,15 @@ function renderScatter() {
   const ink3 = css("--ink-3"), ink = css("--ink"), dataFont = css("--font-data");
   const c = chart("c-scatter");
   c.setOption({
-    ...o, grid: { left: 48, right: 16, top: 16, bottom: 64 },
+    ...o, grid: { left: 48, right: 20, top: 16, bottom: 72 },
     tooltip: itemTip(p => {
       const r = SUM[p.data.rid];
       return `<b>${esc(fullName(r.id))}</b><br>近一年 <b style="font-family:${dataFont}">${wan(r.up)} 萬/坪</b><br>${yName} <b style="font-family:${dataFont}">${pct(r[yk])}</b>` +
         (B.metric !== yk && B.metric !== "up" ? `<br>${m.name} <b style="font-family:${dataFont}">${m.fmt(r[B.metric])}</b>` : "") +
         `<br><span style="color:${ink3}">${int(r.n12)} 筆・點一下加入比較</span>`;
     }),
-    visualMap: visualMap(m, range, { seriesIndex: 0, dimension: 2, left: "center", bottom: 0 }),
-    xAxis: { type: "log", logBase: 2, ...o._axis, name: "萬/坪", nameLocation: "end", nameGap: 6, nameTextStyle: { color: ink3, fontSize: 11, verticalAlign: "top", padding: [8, 0, 0, 0] }, min: 4, max: 256 },
+    visualMap: visualMap(c, m, range, { seriesIndex: 0, dimension: 2, left: "center", bottom: 0 }),
+    xAxis: { type: "log", logBase: 2, ...o._axis, name: "近一年單價（萬/坪）", nameLocation: "middle", nameGap: 22, nameTextStyle: { color: ink3, fontSize: 11 }, min: 4, max: 256 },
     yAxis: { type: "value", ...o._axis, axisLabel: { ...o._axis.axisLabel, formatter: v => v + "%" } },
     series: [
       { name: "鄉鎮市區", type: "scatter", data: pts.filter(r => r[B.metric] != null).map(mk), itemStyle: { opacity: .9, borderColor: "rgba(16,32,34,.35)", borderWidth: .75 }, emphasis: { scale: 1.3 } },
@@ -554,7 +570,10 @@ function setupNav() {
       await renderMap(county, B.metric);
     }
   }
-  addEventListener("resize", () => Object.values(charts).forEach(c => c.resize()));
+  addEventListener("resize", () => Object.values(charts).forEach(c => {
+    c.resize();
+    if (c._vm) c.setOption({ visualMap: vmLayout(c, ...c._vm) });
+  }));
   // 跨過手機斷點時重畫有線尾標籤的圖
   NARROW.addEventListener("change", () => {
     if (P.level === 0) renderCmp();
