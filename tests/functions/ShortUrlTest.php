@@ -78,4 +78,51 @@ class ShortUrlTest extends TestCase
         $this->assertFalse($r['valid']);
         $this->assertNull($r['redirect']);
     }
+
+    public static function paramsProvider(): array
+    {
+        return [
+            '縣市' => ['/臺北市', ['area' => '臺北市', 'subarea' => null, 'type' => null]],
+            '縣市+區域' => ['/臺北市/大安區', ['area' => '臺北市', 'subarea' => '大安區', 'type' => null]],
+            '縣市+類型' => ['/臺北市/住宅大樓', ['area' => '臺北市', 'subarea' => null, 'type' => '住宅大樓']],
+            '縣市+區域+類型' => ['/臺北市/大安區/住宅大樓', ['area' => '臺北市', 'subarea' => '大安區', 'type' => '住宅大樓']],
+            'URL 編碼' => ['/' . rawurlencode('臺北市') . '/' . rawurlencode('大安區'), ['area' => '臺北市', 'subarea' => '大安區', 'type' => null]],
+            '台轉臺' => ['/台北市/大安區', ['area' => '臺北市', 'subarea' => '大安區', 'type' => null]],
+        ];
+    }
+
+    #[DataProvider('paramsProvider')]
+    public function testShortUrlParams(string $path, array $expected)
+    {
+        $this->assertSame($expected, short_url_params($path, self::$options));
+    }
+
+    public function testBuildShortUrl()
+    {
+        $this->assertSame('/', build_short_url(null));
+        $this->assertSame('/' . rawurlencode('臺北市'), build_short_url('臺北市'));
+        $this->assertSame('/' . rawurlencode('臺北市') . '/' . rawurlencode('住宅大樓'), build_short_url('臺北市', null, '住宅大樓'));
+        $this->assertSame('/' . rawurlencode('臺北市') . '/' . rawurlencode('大安區'), build_short_url('臺北市', '大安區', ''));
+    }
+
+    public static function legacyProvider(): array
+    {
+        return [
+            '完整' => [['area' => '臺北市', 'subarea' => '大安區', 'type' => '住宅大樓', 'parking' => '1', 'age_max' => '3'], '/臺北市/大安區/住宅大樓'],
+            '只有縣市' => [['area' => '臺北市'], '/臺北市'],
+            '類型不拘' => [['area' => '臺北市', 'type' => ''], '/臺北市'],
+            '台轉臺' => [['area' => '台北市', 'subarea' => '大安區'], '/臺北市/大安區'],
+            '區域不屬於該縣市' => [['area' => '臺北市', 'subarea' => '板橋區'], '/臺北市'],
+            '不合法的類型' => [['area' => '臺北市', 'type' => 'asd'], '/臺北市'],
+            '不合法的縣市' => [['area' => 'asd'], null],
+            '沒有縣市' => [[], null],
+        ];
+    }
+
+    #[DataProvider('legacyProvider')]
+    public function testLegacyQueryUrl(array $get, ?string $expected)
+    {
+        $url = legacy_query_url($get, self::$options);
+        $this->assertSame($expected, $url === null ? null : rawurldecode($url));
+    }
 }

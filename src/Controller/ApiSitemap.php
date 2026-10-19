@@ -2,6 +2,8 @@
 
 namespace Q\RealPrice\Controller;
 
+use Q\RealPrice\Site;
+
 class ApiSitemap extends ControllerBase
 {
     protected $template = "sitemap.php";
@@ -10,17 +12,16 @@ class ApiSitemap extends ControllerBase
         header('Content-Type: text/xml');
         header('Cache-control: public, max-age=86400');
 
-        $options = require __DIR__ . "/../../build/option.php";
-
+        $site = Site::data();
         $base = "https://realprice.cqd.tw";
         $urls = ["{$base}/"];
-        foreach ($options["area"] as $area => $subareas) {
-            $enc_area = urlencode($area);
-            foreach ($options["type"] as $type) {
-                $enc_type = urlencode($type);
-                $urls[] = "{$base}/{$enc_area}/{$enc_type}";
-                foreach ($subareas as $subarea) {
-                    $urls[] = "{$base}/{$enc_area}/" . urlencode($subarea) . "/{$enc_type}";
+        foreach (array_keys($site['counties']) as $cid) {
+            if (!Site::region($cid)) continue;
+            $ids = array_merge([$cid], Site::districtsOf($cid));
+            foreach ($ids as $id) {
+                $urls[] = $base . Site::url($id);
+                foreach (array_keys($site['types']) as $slug) {
+                    $urls[] = $base . Site::url($id, $slug);
                 }
             }
         }
