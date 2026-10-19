@@ -6,4 +6,5 @@
 /bin/
 /data/
 /.venv/
+/venv/
 /mock/

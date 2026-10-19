@@ -59,7 +59,7 @@
 - bin/json2php.php      build/site.json → build/site.php
 ```
 
-Python 套件裝在 repo 內的 `.venv`（`make` 會依 `requirements.txt` 自動建立），不要裝到系統。
+Python 套件裝在 repo 內的 `venv/`（Makefile 的 `PY_VENV`，`make` 會依 `requirements.txt` 自動建立），不要裝到系統。
 
 ### 清洗規則 (stats_build.py)
 
