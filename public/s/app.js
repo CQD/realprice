@@ -117,6 +117,9 @@ const textOn = ([r, g, b]) => (r * 299 + g * 587 + b * 114) / 1000 < 140 ? "#fff
 
 // ---------- 共用圖表樣式 ----------
 const charts = {};
+// 手機版 (跟 app.css 的 600px 斷點一致)：線尾標籤會吃掉右側 64px 以上，改靠圖例辨識，把寬度留給圖
+const NARROW = matchMedia("(max-width: 600px)");
+const gridRight = r => NARROW.matches ? 20 : r;
 function chart(id) {
   if (!charts[id]) charts[id] = echarts.init(document.getElementById(id), null, { renderer: "canvas" });
   return charts[id];
@@ -140,7 +143,7 @@ function baseOpt() {
 function mAxis(o, showLabels = true) {
   return {
     type: "category", data: M, boundaryGap: true, ...o._axis, splitLine: { show: false },
-    axisLabel: { ...o._axis.axisLabel, show: showLabels, interval: (i, v) => v.endsWith("-01") && +v.slice(0, 4) % 2 === 0, formatter: v => v.slice(0, 4) },
+    axisLabel: { ...o._axis.axisLabel, show: showLabels, interval: (i, v) => v.endsWith("-01") && +v.slice(0, 4) % (NARROW.matches ? 4 : 2) === 0, formatter: v => v.slice(0, 4) },
   };
 }
 // 月份 category 軸 + 疊在同一個 grid 的隱形數值軸 (0 ~ 月份數)
@@ -172,13 +175,15 @@ function provisionalSeries(showLabel = true) {
   }];
 }
 function lineSeries(name, data, color, extra = {}) {
-  return {
+  const s = {
     name, type: "line", data, symbol: "none", connectNulls: true,
     lineStyle: { width: 2, color }, itemStyle: { color },
     endLabel: { show: true, formatter: name, color: css("--ink-2"), fontSize: 11, distance: 6 },
     labelLayout: { moveOverlap: "shiftY" },
     emphasis: { disabled: true }, ...extra,
   };
+  if (NARROW.matches) s.endLabel = { show: false };
+  return s;
 }
 const hundredLine = () => ({ silent: true, symbol: "none", label: { show: false }, lineStyle: { color: css("--ink-3"), type: "solid", width: 1, opacity: .5 }, data: [{ yAxis: 100 }] });
 function fillBaseYears(sel, onChange) {
@@ -227,7 +232,7 @@ function renderBands() {
   const bandMax = Math.max(vMax, ...series.filter(x => x.name === "_band").flatMap(x => x.data.map((v, i) => v == null ? -Infinity : v + series[0].data[i])));
   const yMax = Math.ceil(bandMax * 1.02 / yStep) * yStep;
   chart("c-price").setOption({
-    ...o, grid: { left: 44, right: 64, top: 36, bottom: 8 },
+    ...o, grid: { left: 44, right: gridRight(64), top: NARROW.matches ? 52 : 36, bottom: 8 },
     legend: { top: 0, left: 0, icon: "roundRect", itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: BANDS.filter(b => S(b.k)).map(b => b.name) },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => wan(v) + " 萬/坪") },
     xAxis: mAxes(o, false),
@@ -238,7 +243,7 @@ function renderBands() {
 
   const ex = S("all"), pr = S("pre");
   chart("c-vol").setOption({
-    ...o, grid: { left: 44, right: 64, top: 8, bottom: 22 },
+    ...o, grid: { left: 44, right: gridRight(64), top: 8, bottom: 22 },
     tooltip: { ...o.tooltip, axisPointer: { type: "shadow", shadowStyle: { color: "rgba(120,134,137,.12)" } }, formatter: p => tipRows(p, v => int(v) + " 筆") },
     xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, splitNumber: 2, axisLabel: { ...o._axis.axisLabel, formatter: v => v >= 1000 ? v / 1000 + "k" : v } },
@@ -274,7 +279,7 @@ function renderIndex() {
     raw = b0 ? cutEnd(v.map(x => x == null ? null : x / b0 * 100)) : null;
   }
   chart("c-index").setOption({
-    ...o, grid: { left: 40, right: 64, top: 36, bottom: 24 },
+    ...o, grid: { left: 40, right: gridRight(64), top: 36, bottom: 24 },
     legend: { top: 0, left: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: css("--ink-2"), fontSize: 12 }, data: [{ name: "品質調整指數", icon: "roundRect" }, { name: "單純中位數", icon: "path://M0,0h4v2h-4z M7,0h4v2h-4z M14,0h4v2h-4z" }] },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => v.toFixed(1)) },
     xAxis: mAxes(o),
@@ -480,7 +485,7 @@ function renderCmp() {
   const series = B.cmp.map((id, i) => id ? lineSeries(fullName(id), sparkIndex(id, B.base) || [], css(SLOTS[i])) : null).filter(Boolean);
   if (series.length) series[0].markLine = hundredLine();
   chart("c-cmp").setOption({
-    ...o, grid: { left: 40, right: 110, top: 16, bottom: 24 },
+    ...o, grid: { left: 40, right: gridRight(110), top: 16, bottom: 24 },
     tooltip: { ...o.tooltip, formatter: p => tipRows(p, v => v.toFixed(1)) },
     xAxis: mAxes(o),
     yAxis: { type: "value", ...o._axis, scale: true, name: `${B.base} = 100`, nameTextStyle: { color: css("--ink-3"), fontSize: 11, align: "left" } },
@@ -550,5 +555,10 @@ function setupNav() {
     }
   }
   addEventListener("resize", () => Object.values(charts).forEach(c => c.resize()));
+  // 跨過手機斷點時重畫有線尾標籤的圖
+  NARROW.addEventListener("change", () => {
+    if (P.level === 0) renderCmp();
+    else { renderBands(); renderIndex(); }
+  });
 })();
 })();
