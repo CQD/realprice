@@ -5,7 +5,7 @@ namespace Q\RealPrice\Controller;
 use PDO;
 use function Q\RealPrice\Id\typeIds;
 
-class ApiOption extends ControllerBase
+class ApiOption extends DbControllerBase
 {
     protected $template = null;
     protected function logic()

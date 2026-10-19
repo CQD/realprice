@@ -4,7 +4,7 @@ namespace Q\RealPrice\Controller;
 
 use PDO;
 
-class ApiData extends ControllerBase
+class ApiData extends DbControllerBase
 {
     protected $template = null;
     private ?string $cachedContent = null;
