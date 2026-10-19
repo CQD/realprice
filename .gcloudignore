@@ -5,3 +5,6 @@
 /vendor/
 /bin/
 /data/
+/.venv/
+/venv/
+/mock/

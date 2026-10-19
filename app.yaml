@@ -5,8 +5,14 @@ default_expiration: "1d"
 
 handlers:
 
-- url: /build
-  static_dir: public/build
+# 統計資料，路徑帶 build_id，內容永不變動
+- url: /data
+  static_dir: public/data
+  expiration: "365d"
+
+- url: /geo
+  static_dir: public/geo
+  expiration: "30d"
 
 - url: /favicon.ico
   static_files: public/favicon.png

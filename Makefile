@@ -1,6 +1,7 @@
 APPLICATION_ID=mythical-temple-395806
+PY_VENV=./venv
 
-build: vendor/autoload.php download | option build/transactions.sqlite3 cache
+build: vendor/autoload.php download | stats
 
 download:
 	bin/getall.sh
@@ -9,11 +10,11 @@ server:
 	php -S 0.0.0.0:8080 -t public/
 
 clean:
-	rm public/build/option.json || true
+	rm -f build/site.json build/site.php
+	rm -rf public/data
 
 deep-clean: clean
-	rm build/transactions.sqlite3 || true
-	rm -rf build/cache || true
+	rm -f data/raw.duckdb
 
 deploy:
 	gcloud app deploy --project='$(APPLICATION_ID)' --promote --stop-previous-version $(OPTIONS)
@@ -29,20 +30,21 @@ vendor/autoload.php: composer.lock
 vendor/bin/phpunit: composer.lock
 	composer install
 
-option: public/build/option.json build/option.php
+# 統計資料 (Python + DuckDB，只在離線建置時使用)
+stats: build/site.php
 
-public/build/option.json: build/transactions.sqlite3 bin/build_option.php src/Controller/ApiOption.php
-	 bin/build_option.php > $@
+$(PY_VENV)/bin/python: requirements.txt
+	python3 -m venv $(PY_VENV)
+	$(PY_VENV)/bin/pip install -r requirements.txt
+	touch $@
 
-build/option.php: public/build/option.json
+data/raw.duckdb: data/updated bin/stats_load.py $(PY_VENV)/bin/python
+	$(PY_VENV)/bin/python bin/stats_load.py
+
+build/site.json: data/raw.duckdb bin/stats_build.py
+	$(PY_VENV)/bin/python bin/stats_build.py
+
+build/site.php: build/site.json
 	bin/json2php.php $< > $@
 
-cache: build/cache
-
-build/cache: build/transactions.sqlite3 build/option.php
-	bin/build_cache.php
-
-build/transactions.sqlite3: data/updated bin/getall.sh
-	bin/build_sqlite.php
-
-.PHONY: server download cache
+.PHONY: server download stats clean deep-clean
