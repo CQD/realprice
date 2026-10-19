@@ -1,6 +1,9 @@
 /data/
 /build/
 /public/build/
+/public/data/
 /vendor/
 
 /.claude/
+/.venv/
+/mock/
