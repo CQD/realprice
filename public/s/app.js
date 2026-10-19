@@ -18,13 +18,14 @@ const SLOTS = ["--s1", "--s2", "--s3", "--s4"];
 // 淡冷 → 強暖：便宜／漲少 = 淡冷色，貴／漲多 = 強暖色
 const WARM = ["#e1ebf2", "#eef0e4", "#fbe1ab", "#f7b264", "#ec7b3a", "#d2472a", "#9c1f1c"];
 const DIVERGE = ["#3f7fc2", "#a9c7e6", "#f2f0eb", "#f3a86b", "#cf4528"];
+// 冷 → 暖，兩端都是飽和色：避免大片淡色跟「樣本不足」的灰色分不清楚
+const COOL_WARM = ["#2b6cb0", "#3d93c4", "#6fbfa8", "#e3c14a", "#f0883a", "#d2472a", "#9c1f1c"];
 const METRIC = {
   chg10: { name: "10 年漲幅", fmt: v => pct(v), ramp: () => WARM, lo: "漲少", hi: "漲多" },
   chg5: { name: "5 年漲幅", fmt: v => pct(v), ramp: () => WARM, lo: "漲少", hi: "漲多" },
   up: { name: "近一年單價中位數", fmt: v => wan(v) + " 萬/坪", ramp: () => WARM, lo: "便宜", hi: "貴" },
   pre_prem: { name: "預售 vs 新成屋價差", fmt: v => pct(v), ramp: () => DIVERGE, div: true, lo: "預售較便宜", hi: "預售較貴" },
-  // 收益率低 = 房價相對租金貴 → 暖色
-  yield: { name: "毛租金收益率", fmt: v => pct(v, 2, false), ramp: () => [...WARM].reverse(), lo: "收益率低", hi: "收益率高" },
+  yield: { name: "毛租金收益率", fmt: v => pct(v, 2, false), ramp: () => COOL_WARM, lo: "收益率低", hi: "收益率高" },
 };
 
 let M, END, LAST, SUM = {}, LIST = [];

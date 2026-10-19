@@ -108,7 +108,7 @@ gtag('config', 'G-XPVFS6XXKD');
   </div>
   <div class="grid2">
     <section class="panel">
-      <header><div><h2 id="map-title">地圖</h2><p id="map-sub">顏色越紅代表越貴或漲越多，越淡越冷代表越便宜或漲越少。點區域可以看該區的走勢。</p></div></header>
+      <header><div><h2 id="map-title">地圖</h2><p id="map-sub">顏色越暖代表數值越高，越冷或越淡代表越低，灰色是樣本不足。點區域可以看該區的走勢。</p></div></header>
       <div class="chart tall" id="c-map"></div>
     </section>
     <section class="panel">
