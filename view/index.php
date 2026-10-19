@@ -67,7 +67,7 @@ gtag('config', 'G-XPVFS6XXKD');
       </select>
     </label>
 <?php if ($hasDistricts): ?>
-    <label class="field"><span>鄉鎮市區（依近一年成交量）</span>
+    <label class="field"><span>鄉鎮市區</span>
       <select id="f-district">
         <option value="<?=e($countyId)?>"<?=$level === 1 ? ' selected' : ''?>>全區</option>
 <?php foreach ($districts as $did): ?>
@@ -117,7 +117,7 @@ gtag('config', 'G-XPVFS6XXKD');
     </section>
     <section class="panel full">
       <header>
-        <div><h2>多區比較：品質調整指數</h2><p>最多 4 區，12 個月移動平均，以基期年平均為 100。從散佈圖或排行表把區域加進來。</p></div>
+        <div><h2>多區比較：品質調整指數</h2><p>點選縣市排行/散布圖以新增欲比較區域，最多四個區域</p></div>
         <label class="field"><span>基期</span><select id="f-base"></select></label>
       </header>
       <div class="cmp-chips" id="cmp-chips"></div>
@@ -140,7 +140,7 @@ gtag('config', 'G-XPVFS6XXKD');
 <?php else: ?>
   <section class="panel full">
     <header>
-      <div><h2>成交單價中位數（萬/坪），依屋齡分層</h2><p>預售屋、新成屋（≤3 年）、中古屋（3–20 年）、老屋（&gt;20 年）分開看，避免「這個月賣比較多新房子」被當成上漲。陰影是選定分層的 25–75 百分位區間。</p></div>
+      <div><h2>成交單價中位數（萬/坪）與成交筆數</h2><p>新成屋：≤3 年; 中古屋：3–20 年; 老屋：&gt;20 年;  陰影：25–75 百分位區間</p></div>
       <div class="filters inline">
         <label class="field"><span>區間顯示</span><select id="f-iqr"><option value="new">新成屋</option><option value="pre">預售屋</option><option value="mid">中古屋</option><option value="old">老屋</option><option value="">不顯示</option></select></label>
         <label class="toggle"><input type="checkbox" id="f-smooth" checked> 12 個月移動平均</label>
@@ -148,7 +148,6 @@ gtag('config', 'G-XPVFS6XXKD');
     </header>
     <div class="chart" id="c-price"></div>
     <div class="chart" id="c-vol" style="height:150px"></div>
-    <p class="note">下方長條是每月成交筆數（成屋＋預售屋），和上圖共用時間軸。灰底「申報中」的月份筆數還沒齊，價格線只畫到 <?=e($site['month_end'])?>。</p>
     <details class="dt"><summary>以表格檢視（年度）</summary><div class="tablebox"><table id="t-year"></table></div></details>
   </section>
 
@@ -162,7 +161,7 @@ gtag('config', 'G-XPVFS6XXKD');
     </section>
 <?php if ($showRegionDetail): ?>
     <section class="panel">
-      <header><div><h2>租金與毛租金收益率</h2><p>整層住家（不含套房與分租）月租金中位數，以及「年租金 ÷ 成屋單價」。2018 年以前租賃申報很少，參考就好。</p></div></header>
+      <header><div><h2>租金與毛租金收益率</h2><p>整層住家（不含套房與分租）月租金中位數與「年租金 ÷ 成屋單價」<br>2018 年前租賃申報少，僅供參考</p></div></header>
       <div class="chart sm" id="c-rent"></div>
       <div class="chart sm" id="c-yield"></div>
     </section>
@@ -188,7 +187,7 @@ gtag('config', 'G-XPVFS6XXKD');
 <?php $mcounty = $level === 2 ? $countyId : ($hasDistricts ? $countyId : null); ?>
 <?php if ($mcounty && Site::districtsOf($mcounty)): ?>
   <div class="sec-head">
-    <div><h2><?=e($site['counties'][$mcounty])?>各區比較</h2><p class="small muted">品質調整指數（12 個月移動平均，全部住宅），所有小圖用同一個刻度，2016 = 100。</p></div>
+    <div><h2><?=e($site['counties'][$mcounty])?>各區比較</h2><p class="small muted">品質調整指數（12 個月移動平均，全部住宅），2016 = 100。</p></div>
     <label class="field"><span>排序</span><select id="f-sort"><option value="chg10">10 年漲幅</option><option value="chg5">5 年漲幅</option><option value="up">近一年單價</option><option value="n12">近一年筆數</option></select></label>
   </div>
   <div class="multiples" id="multiples"></div>
