@@ -411,7 +411,7 @@ async function renderMap(scope, metric) {
     }),
     visualMap: visualMap(c, m, range, { left: edgeLeft(), bottom: 0 }),
     series: [{
-      type: "map", map: mapName, roam: true, scaleLimit: { min: 1, max: 12 }, data,
+      type: "map", map: mapName, roam: false, data, // 不能縮放拖曳：滑頁面時常誤觸
       ...(scope === "TW" ? { boundingCoords: [[119.3, 25.35], [122.05, 21.85]] } : {}),
       itemStyle: { areaColor: css("--missing"), borderColor: "#ffffff", borderWidth: .6 },
       emphasis: { label: { show: false }, itemStyle: { areaColor: null, borderColor: css("--ink"), borderWidth: 1.5 } },
