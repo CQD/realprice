@@ -9,9 +9,7 @@
 │   ├── stats_load.py          # 原始 JSON → data/raw.duckdb
 │   └── stats_build.py         # 清洗 + 彙總 → public/data/{build_id}/ + build/site.json
 ├── build/            # 建置產出物 (線上服務需要)
-│   ├── site.php               # 區域清單、各區摘要、資料版本 (由 site.json 轉成)
-│   ├── transactions.sqlite3   # 舊 API 用的資料庫
-│   └── option.php             # 舊 API 用的選項快取
+│   └── site.php               # 區域清單、各區摘要、資料版本 (由 site.json 轉成)
 ├── data/             # 原始資料 (僅建置時需要，不部署)
 │   ├── {季度}/       # 如 113S1, 113S2... 或日期如 20240101
 │   └── raw.duckdb    # stats_load.py 產生
@@ -23,8 +21,7 @@
 │   └── s/            # 靜態資源 (app.css, app.js)
 ├── src/
 │   ├── Site.php      # 讀 build/site.php：區域查詢、短網址組成、數字格式
-│   ├── Controller/   # 控制器
-│   └── Id/           # ID 轉換函式
+│   └── Controller/   # 控制器
 ├── view/             # 視圖模板
 └── tests/            # 測試
 ```
@@ -37,7 +34,6 @@
 | `/{縣市}[/{類型}]` | 縣市：指標列、屋齡分層走勢、品質調整指數、縣內地圖、各區小圖、各區排行 |
 | `/{縣市}/{區域}[/{類型}]` | 鄉鎮市區：指標列、屋齡分層走勢、品質調整指數、租金、同縣市各區小圖 |
 | `/sitemap.xml` | Sitemap |
-| `/api/option`、`/api/data` | 舊版 API (SQLite)，新頁面已不使用 |
 
 - 嘉義市、新竹市的資料只有一個同名區：`/新竹市/新竹市` 301 到 `/新竹市`，縣市頁改用鄉鎮市區頁的版型
 - 鄉鎮市區選單依近 12 個月成交量排序 (`site.php` 的 `districts`)
@@ -61,7 +57,6 @@
 - bin/stats_load.py     a (成屋)、b (預售)、c (租賃) 全部載入 data/raw.duckdb
 - bin/stats_build.py    清洗、彙總、品質調整指數、租金 → public/data/{build_id}/、build/site.json
 - bin/json2php.php      build/site.json → build/site.php
-- (舊 API) bin/build_sqlite.php、bin/build_option.php、bin/build_cache.php
 ```
 
 Python 套件裝在 repo 內的 `.venv`（`make` 會依 `requirements.txt` 自動建立），不要裝到系統。
@@ -86,7 +81,7 @@ Python 套件裝在 repo 內的 `.venv`（`make` 會依 `requirements.txt` 自�
 
 ```bash
 make download    # 下載最新資料
-make build       # 完整建置 (下載 + 統計資料 + 舊 API 的 SQLite)
+make build       # 完整建置 (下載 + 統計資料)
 make stats       # 只重建統計資料
 make server      # 啟動開發伺服器 (localhost:8080)
 make deploy      # 部署到 Google App Engine
@@ -99,8 +94,8 @@ make test        # 執行測試
 
 - `ControllerBase`：路徑解析 + 模板輸出
 - `Index`：三層頁面，準備標題、摘要文字、指標列、選單等給 `view/index.php`
-- `DbControllerBase`：舊 API 用，初始化 SQLite 並註冊 `median`、`p25`、`p75`、`parking_unit_price`
-- `ApiData`、`ApiOption`：舊 API，見 git 歷史 (`build/cache/` 預建 cache 條件：住宅大樓、parking=0、age_max=3、單一縣市)
+- `ApiSitemap`：sitemap.xml
+- 2026-10 改版前的 SQLite + `/api/data` 任意條件查詢已移除，需要參考時看 git 歷史
 
 ## 前端
 
@@ -120,12 +115,11 @@ make test        # 執行測試
 ## 本地開發
 
 本地開發的時候用 `php -S 0.0.0.0:8080 -t public/` 啟動 PHP server（需要先跑過 `make stats`）
-需注意內容大幅度依賴 javascript 來顯示；本機 PHP 若沒有 pdo_sqlite，舊 API 會 500，不影響新頁面
+需注意內容大幅度依賴 javascript 來顯示
 
 本地環境有這些 CLI 指令可供使用，可視情況選擇使用
 - `jq`: 強大的 json 處理工具
 - `ag`: silver searcher，在大批搜尋檔案內容時比 grep 更好用的檔案文字搜尋工具
 - `awk`: 強大的文字 stream processor
-- `sqlite`: sqlite db CLI
 
 如果修改過程發現有對未來修改有幫助的知識，或是 CLAUDE.md 內的知識已經過時，需要一並更新 CLAUDE.md

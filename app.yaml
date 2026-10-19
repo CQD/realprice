@@ -5,9 +5,6 @@ default_expiration: "1d"
 
 handlers:
 
-- url: /build
-  static_dir: public/build
-
 # 統計資料，路徑帶 build_id，內容永不變動
 - url: /data
   static_dir: public/data

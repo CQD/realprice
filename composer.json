@@ -2,10 +2,7 @@
     "autoload": {
         "psr-4": {
             "Q\\RealPrice\\": "src/"
-        },
-        "files": [
-            "src/Id/functions.php"
-        ]
+        }
     },
     "require-dev": {
         "phpunit/phpunit": "^12.5"

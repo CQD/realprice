@@ -26,7 +26,7 @@ OUT = f'{ROOT}/public/data/{BUILD_ID}'
 KEEP_BUILDS = 2   # 部署時保留前一版，避免邊緣快取的舊 HTML 抓不到資料
 THIS_YEAR = datetime.date.today().year
 
-# 跟 src/Id/functions.php 的 ID::$counties 相同，順序是選單用的地理順序 (北 → 南 → 東 → 離島)
+# 縣市代碼是原始檔名的前綴 (如 a_lvr_land_a.xml)，順序是選單用的地理順序 (北 → 南 → 東 → 離島)
 COUNTIES = {
     'a': '臺北市', 'f': '新北市', 'c': '基隆市', 'h': '桃園市', 'o': '新竹市', 'j': '新竹縣',
     'k': '苗栗縣', 'b': '臺中市', 'n': '彰化縣', 'm': '南投縣', 'p': '雲林縣', 'i': '嘉義市',

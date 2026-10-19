@@ -1,6 +1,6 @@
 APPLICATION_ID=mythical-temple-395806
 
-build: vendor/autoload.php download | option build/transactions.sqlite3 cache stats
+build: vendor/autoload.php download | stats
 
 download:
 	bin/getall.sh
@@ -9,11 +9,11 @@ server:
 	php -S 0.0.0.0:8080 -t public/
 
 clean:
-	rm public/build/option.json || true
+	rm -f build/site.json build/site.php
+	rm -rf public/data
 
 deep-clean: clean
-	rm build/transactions.sqlite3 || true
-	rm -rf build/cache || true
+	rm -f data/raw.duckdb
 
 deploy:
 	gcloud app deploy --project='$(APPLICATION_ID)' --promote --stop-previous-version $(OPTIONS)
@@ -29,17 +29,7 @@ vendor/autoload.php: composer.lock
 vendor/bin/phpunit: composer.lock
 	composer install
 
-option: public/build/option.json build/option.php
-
-public/build/option.json: build/transactions.sqlite3 bin/build_option.php src/Controller/ApiOption.php
-	 bin/build_option.php > $@
-
-build/option.php: public/build/option.json
-	bin/json2php.php $< > $@
-
-cache: build/cache
-
-# 新版頁面的統計資料 (Python + DuckDB，只在離線建置時使用)
+# 統計資料 (Python + DuckDB，只在離線建置時使用)
 stats: build/site.php
 
 .venv/bin/python: requirements.txt
@@ -56,10 +46,4 @@ build/site.json: data/raw.duckdb bin/stats_build.py
 build/site.php: build/site.json
 	bin/json2php.php $< > $@
 
-build/cache: build/transactions.sqlite3 build/option.php
-	bin/build_cache.php
-
-build/transactions.sqlite3: data/updated bin/getall.sh
-	bin/build_sqlite.php
-
-.PHONY: server download cache stats
+.PHONY: server download stats clean deep-clean

@@ -7,8 +7,6 @@ include __DIR__ . '/index_functions.php';
 
 $map = [
     '/' => 'Index',
-    '/api/option' => 'ApiOption',
-    '/api/data' => 'ApiData',
     '/sitemap.xml' => 'ApiSitemap',
     '/sitemap' => 'ApiSitemap',
     '404' => 'FourOFour',
@@ -35,7 +33,7 @@ if ($path === '/' && isset($_GET['area'])) {
 
 // 短網址路由：驗證每一段路徑都是合法的縣市/區域/類型
 $controller = $map[$path] ?? null;
-if (!$controller && !str_starts_with($path, '/api/') && !str_starts_with($path, '/s/') && !str_starts_with($path, '/data/') && $path !== '/favicon.png' && $path !== '/og.png') {
+if (!$controller && !str_starts_with($path, '/s/') && !str_starts_with($path, '/data/') && $path !== '/favicon.png' && $path !== '/og.png') {
     $options = Site::data();
     $result = resolve_short_url($path, $options);
 
