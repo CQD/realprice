@@ -19,6 +19,9 @@ deep-clean: clean
 deploy:
 	gcloud app deploy --project='$(APPLICATION_ID)' --promote --stop-previous-version $(OPTIONS)
 
+cleanup:
+	bin/gae_cleanup.sh '$(APPLICATION_ID)'
+
 test: vendor/bin/phpunit
 	vendor/bin/phpunit tests
 
@@ -47,4 +50,4 @@ build/site.json: data/raw.duckdb bin/stats_build.py
 build/site.php: build/site.json
 	bin/json2php.php $< > $@
 
-.PHONY: server download stats clean deep-clean
+.PHONY: server download stats clean deep-clean deploy cleanup

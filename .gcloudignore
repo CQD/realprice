@@ -8,3 +8,5 @@
 /.venv/
 /venv/
 /mock/
+.claude/
+.DS_Store

@@ -7,7 +7,9 @@
 ```
 ├── bin/              # 資料處理腳本 (不部署)
 │   ├── stats_load.py          # 原始 JSON → data/raw.duckdb
-│   └── stats_build.py         # 清洗 + 彙總 → public/data/{build_id}/ + build/site.json
+│   ├── stats_build.py         # 清洗 + 彙總 → public/data/{build_id}/ + build/site.json
+│   ├── cron_update.sh         # crontab 用：make build，site.php 比 data/.deployed 新才 make deploy + make cleanup
+│   └── gae_cleanup.sh         # 刪掉沒流量的 GAE 版本、gae-standard 裡非 latest 的 image
 ├── build/            # 建置產出物 (線上服務需要)
 │   └── site.php               # 區域清單、各區摘要、資料版本 (由 site.json 轉成)
 ├── data/             # 原始資料 (僅建置時需要，不部署)
@@ -88,7 +90,10 @@ make deploy      # 部署到 Google App Engine
 make test        # 執行測試
 ```
 
-實務上每 2–3 週手動 `make build && make deploy`。
+部署機器的 crontab 每天定時跑 `bin/cron_update.sh`，沒新資料就只是空跑。PATH (gcloud、composer、python3)、log、失敗通知由 repo 外的 cron wrapper 處理，repo 內不放機器專屬的路徑或 token；`cron_update.sh` 失敗時 exit 非 0、部署成功會 touch `data/.deployed`，wrapper 靠這兩點判斷要不要通知。
+- 內政部每月 1／11／21 日發布，但「最新一期」的下載網址不分期數，還沒發布時拿到的是上一期。`getall.sh` 比對 zip 裡 `build_time.xml` 的 `<lvr_time>`（資料內容期間），跟 `data/*/lvr_time.txt` 有相同的就當作尚未發布、不建資料夾，下次再試；key 包含今天，發布當天就能抓到
+- cron 沒有 stdin、沒有 SSH agent：流程不能有互動提示（`getall.sh` 在非 TTY 時自動移除已併入季報的日期資料夾）、不能用到 SSH key
+- gcloud 用 `~/.config/gcloud` 存的使用者憑證；失效 (`invalid_grant`) 時要手動 `gcloud auth login --no-launch-browser`
 
 ## Controller 說明
 
