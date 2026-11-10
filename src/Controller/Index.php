@@ -86,6 +86,8 @@ class Index extends ControllerBase
             'breadcrumbs' => $breadcrumbs,
             'title' => $title,
             'canonical' => 'https://realprice.cqd.tw' . Site::url($id, $type),
+            'ogImage' => 'https://realprice.cqd.tw' . Site::ogImage($id),
+            'ogAlt' => sprintf('%s房價趨勢：10 年漲幅 %s、近一年單價中位數 %s 萬/坪', $name, Site::pct($region['chg10']), Site::wan($region['up'])),
             'pageConfig' => [
                 'level' => $level,
                 'id' => $id,

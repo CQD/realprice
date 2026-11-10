@@ -8,6 +8,7 @@
 ├── bin/              # 資料處理腳本 (不部署)
 │   ├── stats_load.py          # 原始 JSON → data/raw.duckdb
 │   ├── stats_build.py         # 清洗 + 彙總 → public/data/{build_id}/ + build/site.json
+│   ├── og_build.py            # 各區 og:image → public/data/{build_id}/og/
 │   ├── cron_update.sh         # crontab 用：make build，site.php 比 data/.deployed 新才 make deploy + make cleanup
 │   └── gae_cleanup.sh         # 刪掉沒流量的 GAE 版本、gae-standard 裡非 latest 的 image
 ├── build/            # 建置產出物 (線上服務需要)
@@ -18,7 +19,8 @@
 ├── public/           # Web 根目錄
 │   ├── index.php     # 入口點與路由
 │   ├── index_functions.php    # 短網址解析 (有 unit test)
-│   ├── data/{build_id}/       # 統計資料 (stats_build.py 產生，保留最近兩版)
+│   ├── data/{build_id}/       # 統計資料 (stats_build.py 產生，保留最近兩版) 與 og 圖
+│   ├── og.png                 # 預設 og 圖 (= 全台那張的快照，README 用；make og 更新)
 │   ├── geo/towns.json         # 鄉鎮市區界線 TopoJSON
 │   └── s/            # 靜態資源 (app.css, app.js)
 ├── src/
@@ -58,6 +60,7 @@
 - bin/process.sh        解壓縮、XML 轉 JSON (用 bin/xml2json) → data/{季度}/*.json.gz
 - bin/stats_load.py     a (成屋)、b (預售)、c (租賃) 全部載入 data/raw.duckdb
 - bin/stats_build.py    清洗、彙總、品質調整指數、租金 → public/data/{build_id}/、build/site.json
+- bin/og_build.py       各區 og:image (Pillow) → public/data/{build_id}/og/
 - bin/json2php.php      build/site.json → build/site.php
 ```
 
@@ -77,6 +80,7 @@ Python 套件裝在 repo 內的 `venv/`（Makefile 的 `PY_VENV`，`make` 會依
 
 - `public/data/{build_id}/regions.json`：各區摘要 + `spark`（12 個月移動平均的 log 指數，小圖與比較圖用）
 - `public/data/{build_id}/c/{縣市代碼}/{類型slug|all}.json`：該縣市與轄下各區的月資料 (n, p25, p50, p75)；`all.json` 另含 `index` 與 `rent`
+- `public/data/{build_id}/og/{md5(區域ID) 前 12 碼}.png`：og:image 1200×630，`Site::ogImage()` 組網址；類型頁共用區域的圖
 - `build/site.json` → `build/site.php`：PHP 用，含 `area`/`type`（格式沿用 resolve_short_url）、`districts`、`regions`（含 `by_type` 各類型近 12 個月摘要）
 
 ### 常用指令
@@ -84,7 +88,8 @@ Python 套件裝在 repo 內的 `venv/`（Makefile 的 `PY_VENV`，`make` 會依
 ```bash
 make download    # 下載最新資料
 make build       # 完整建置 (下載 + 統計資料)
-make stats       # 只重建統計資料
+make stats       # 只重建統計資料 (含 og 圖)
+make og          # 只重畫目前版本的 og 圖，並更新 public/og.png
 make server      # 啟動開發伺服器 (localhost:8080)
 make deploy      # 部署到 Google App Engine
 make test        # 執行測試
@@ -111,6 +116,7 @@ make test        # 執行測試
 - 只有淺色主題
 - 手機 (≤600px，JS 的 `NARROW` 跟 app.css 斷點一致)：線圖不畫線尾標籤、右邊界縮小、年份標籤每 4 年一個；指標列與類型 chips 改成橫向捲動單列，避免主圖表被擠到很下面。圖表卡片 (`.panel`) 貼齊螢幕左右、圖表再比內距往外延伸 12px，靠左的圖例／色階用 `edgeLeft()` 縮回來對齊文字。注意 Android Firefox 調大字型會讓 CSS viewport 變窄 (從截圖推算約 270px)
 - 地圖不能縮放拖曳 (`roam: false`)，滑頁面時容易誤觸
+- og 圖 (`bin/og_build.py`)：左邊區域名、主數字 (10 年漲幅 → 5 年漲幅 → 單價，有哪個用哪個)、次要指標、指數走勢 (本區／縣市／全台)；右邊地圖 (全台、縣市是 10 年漲幅分級，鄉鎮市區是縣市地圖強調該區，周圍淡灰鄰近區域往外漸淡)。字型用系統的 Noto Sans CJK TC (`fc-match`，部署機器要有 `fonts-noto-cjk`)，2 倍超取樣再縮小、存成調色盤 PNG (每張 ~80KB)
 - 地圖、散佈圖色階：貴／漲多 = 強暖色，便宜／漲少 = 淡冷色；租金收益率用飽和的冷色 (低) → 暖色 (高)，避免淡色跟樣本不足的灰色混淆；預售價差用藍 (預售較便宜) ↔ 紅 (預售較貴)
 
 ## 部署與快取

@@ -87,6 +87,12 @@ class Site
         return '/' . implode('/', array_map('rawurlencode', $parts));
     }
 
+    /** og:image 路徑：bin/og_build.py 依區域產生，檔名是區域 ID 的 md5 前 12 碼 (避免中文檔名)；類型頁共用區域的圖 */
+    public static function ogImage(string $id): string
+    {
+        return '/data/' . self::data()['build_id'] . '/og/' . substr(md5($id), 0, 12) . '.png';
+    }
+
     // ---------- 數字格式 ----------
 
     public static function wan(?float $v): string

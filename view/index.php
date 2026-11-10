@@ -15,11 +15,19 @@ $showRegionDetail = $level === 2 || ($level === 1 && !$hasDistricts);
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 <meta name="theme-color" content="#f25500">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="實價登錄房價趨勢">
+<meta property="og:url" content="<?=e($canonical)?>">
 <meta property="og:title" content="<?=e($title)?>">
 <meta property="og:description" content="<?=e($summary)?>">
-<meta property="og:image" content="https://realprice.cqd.tw/og.png">
+<meta property="og:image" content="<?=e($ogImage)?>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<?=e($ogAlt)?>">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<?=e($title)?>">
-<meta name="twitter:image" content="https://realprice.cqd.tw/og.png">
+<meta name="twitter:description" content="<?=e($summary)?>">
+<meta name="twitter:image" content="<?=e($ogImage)?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">

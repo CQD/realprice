@@ -8,6 +8,7 @@ class SiteTest extends TestCase
     protected function setUp(): void
     {
         Site::setData([
+            'build_id' => '202611011018',
             'types' => ['tower' => '住宅大樓', 'suite' => '套房'],
             'counties' => ['a' => '臺北市', 'o' => '新竹市'],
             'districts' => ['a' => ['a-中山區', 'a-大安區'], 'o' => ['o-新竹市']],
@@ -51,6 +52,13 @@ class SiteTest extends TestCase
         // 順序沿用 site.php (近 12 個月成交量排序)
         $this->assertSame(['a-中山區', 'a-大安區'], Site::districtsOf('a'));
         $this->assertSame([], Site::districtsOf('o'));
+    }
+
+    public function testOgImage()
+    {
+        // 檔名規則要跟 bin/og_build.py 的 og_name() 一致
+        $this->assertSame('/data/202611011018/og/3d9975706be3.png', Site::ogImage('TW'));
+        $this->assertSame('/data/202611011018/og/ec591bab78c9.png', Site::ogImage('a-大安區'));
     }
 
     public function testTypeSlug()

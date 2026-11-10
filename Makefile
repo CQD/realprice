@@ -46,8 +46,13 @@ data/raw.duckdb: data/updated bin/stats_load.py $(PY_VENV)/bin/python
 
 build/site.json: data/raw.duckdb bin/stats_build.py
 	$(PY_VENV)/bin/python bin/stats_build.py
+	$(PY_VENV)/bin/python bin/og_build.py || { rm -f $@; exit 1; }
+
+# 只重畫目前版本的 og:image，並更新 public/og.png (README、預設圖，進 git)
+og: $(PY_VENV)/bin/python
+	$(PY_VENV)/bin/python bin/og_build.py --static
 
 build/site.php: build/site.json
 	bin/json2php.php $< > $@
 
-.PHONY: server download stats clean deep-clean deploy cleanup
+.PHONY: server download stats og clean deep-clean deploy cleanup
